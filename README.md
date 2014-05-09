@@ -18,7 +18,7 @@ By default, all validations are disabled. Core validations:
 
 An array of `includes` and `excludes` can also be used to define more complex rules.
 
-# Usage
+# Example
 
 ``` javascript
 var validator = new PasswordValidator($('#password')[0], {
