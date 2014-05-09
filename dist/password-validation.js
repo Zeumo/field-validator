@@ -67,9 +67,7 @@ PasswordValidation = (function() {
         exclude: excludes_errors
       });
     }
-    if (errors.length) {
-      return errors;
-    }
+    return errors;
   };
 
   PasswordValidation.prototype.defaultRegex = function(regex, fallback) {
