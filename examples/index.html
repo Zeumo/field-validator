@@ -6,10 +6,43 @@
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
   <script src="../dist/password-validation.js"></script>
+  <style>
+    body {
+      font-family: Helvetica;
+      font-size: 14px;
+    }
+
+    .validations span {
+      display: inline-block;
+      border: 1px solid #ddd;
+      color: #aaa;
+      border-radius: 3px;
+      margin-right: 3px;
+      padding: 2px 8px;
+      font-size: 12px;
+    }
+
+    .validations span.active-error {
+      color: white;
+      background: #D2322D;
+      border-color: #D2322D;
+    }
+    .validations span.active-success {
+      color: white;
+      background: #5CB85C;
+      border-color: #5CB85C;
+    }
+  </style>
 </head>
 <body>
-  <input type="password" id="password">
-  <div class="validations"></div>
+  <input type="password" id="password" autofocus>
+  <div class="validations">
+    <span class="lowercase">a-z</span>
+    <span class="uppercase">A-Z</span>
+    <span class="numbers">0-9</span>
+    <span class="symbols">%&$!</span>
+    <span class="length">6+</span>
+  </div>
 
   <script>
     $(function() {
@@ -23,7 +56,14 @@
 
       $(document).on('keyup', '#password', function() {
         var errors = validator.validate();
-        $(this).next('.validations').html(errors.join(', '));
+        $('.validations').children().removeClass('active-error active-success');
+        if (!this.value) return;
+
+        $.each(errors, function(i, className) {
+          $('.validations').find('.' + className).addClass('active-error');
+        });
+
+        $('.validations').find(':not(.active-error)').addClass('active-success');
       });
     });
   </script>
