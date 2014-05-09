@@ -29,7 +29,7 @@ An array of `includes` and `excludes` can also be used to define more complex ru
     });
 
     $(document).on('keyup', '#password', function() {
-      var errors = validator.validate()
+      var errors = validator.validate();
     });
 
 # Tests
