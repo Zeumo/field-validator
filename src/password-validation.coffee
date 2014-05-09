@@ -1,10 +1,10 @@
 class PasswordValidation
 
   constructor: (@el, validations = {}) ->
-    @validations = _.defaults validations, @validations
+    @validations = _.defaults validations, @_validations
     @assignMessages()
 
-  validations:
+  _validations:
     length: 0
     lowercase: false
     uppercase: false
@@ -13,13 +13,13 @@ class PasswordValidation
     includes: {}
     excludes: {}
 
-  matchers:
+  _matchers:
     lowercase: /[a-z]/
     uppercase: /[A-Z]/
     numbers: /[0-9]/
     symbols: /[^a-zA-Z\d\s]/
 
-  messages:
+  _messages:
     length: 'at least {length} characters'
     lowercase: 'a lowercase letter'
     uppercase: 'an uppercase letter'
@@ -27,6 +27,9 @@ class PasswordValidation
     symbols: 'a symbol'
     includes: {}
     excludes: {}
+
+  set: (k, v) ->
+    this[k] = v
 
   validate: ->
     value  = @el.value
@@ -38,12 +41,12 @@ class PasswordValidation
         errors.push 'length'
 
     # Test matchers
-    _.each @matchers, (regex, validation) =>
+    _.each @_matchers, (regex, validation) =>
       if @validations[validation]
         unless @defaultRegex(@validations[validation], regex).test(value)
           errors.push validation
 
-    # Test includes
+    # # Test includes
     includes_errors = _.compact _.map @validations.includes, (requirement) ->
       requirement unless _.contains value, requirement
     errors.push include: includes_errors if includes_errors.length
@@ -57,12 +60,13 @@ class PasswordValidation
 
   defaultRegex: (regex, fallback) ->
     if regex instanceof RegExp
-      regex
+      return regex
     else
       return fallback
 
   assignMessages: ->
-    _.each @messages, (message, validation) =>
+    @messages = _.clone @_messages
+    _.each @_messages, (message, validation) =>
 
       if typeof message == 'string'
         value = @template message, @validations

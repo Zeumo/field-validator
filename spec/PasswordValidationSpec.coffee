@@ -51,6 +51,13 @@ describe 'excluded', ->
     pv = new PasswordValidation input, excludes: ['hat']
     expect(pv.validate()).toContain { exclude: ['hat'] }
 
+  it 'dynamically exclude hat', ->
+    input.value = 'hatmuffin'
+    pv = new PasswordValidation input
+    pv.set 'validations', excludes: { hat: 'hat' }
+
+    expect(pv.validate()).toContain { exclude: ['hat'] }
+
 describe 'valid password', ->
   it "is valid", ->
     input.value = '_9hatMuffins!'

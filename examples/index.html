@@ -63,7 +63,14 @@
         uppercase: true,
         lowercase: true,
         numbers: true,
-        symbols: true
+        symbols: true,
+        excludes: {
+          email: $('#email').val()
+        }
+      });
+
+      $(document).on('keyup', '#email', function() {
+        validator.excludes.push([this.value]);
       });
 
       $(document).on('keyup', '#password', function() {

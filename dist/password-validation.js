@@ -12,11 +12,11 @@ PasswordValidation = (function() {
     if (validations == null) {
       validations = {};
     }
-    this.validations = _.defaults(validations, this.validations);
+    this.validations = _.defaults(validations, this._validations);
     this.assignMessages();
   }
 
-  PasswordValidation.prototype.validations = {
+  PasswordValidation.prototype._validations = {
     length: 0,
     lowercase: false,
     uppercase: false,
@@ -26,14 +26,14 @@ PasswordValidation = (function() {
     excludes: {}
   };
 
-  PasswordValidation.prototype.matchers = {
+  PasswordValidation.prototype._matchers = {
     lowercase: /[a-z]/,
     uppercase: /[A-Z]/,
     numbers: /[0-9]/,
     symbols: /[^a-zA-Z\d\s]/
   };
 
-  PasswordValidation.prototype.messages = {
+  PasswordValidation.prototype._messages = {
     length: 'at least {length} characters',
     lowercase: 'a lowercase letter',
     uppercase: 'an uppercase letter',
@@ -41,6 +41,10 @@ PasswordValidation = (function() {
     symbols: 'a symbol',
     includes: {},
     excludes: {}
+  };
+
+  PasswordValidation.prototype.set = function(k, v) {
+    return this[k] = v;
   };
 
   PasswordValidation.prototype.validate = function() {
@@ -52,7 +56,7 @@ PasswordValidation = (function() {
         errors.push('length');
       }
     }
-    _.each(this.matchers, (function(_this) {
+    _.each(this._matchers, (function(_this) {
       return function(regex, validation) {
         if (_this.validations[validation]) {
           if (!_this.defaultRegex(_this.validations[validation], regex).test(value)) {
@@ -93,7 +97,8 @@ PasswordValidation = (function() {
   };
 
   PasswordValidation.prototype.assignMessages = function() {
-    return _.each(this.messages, (function(_this) {
+    this.messages = _.clone(this._messages);
+    return _.each(this._messages, (function(_this) {
       return function(message, validation) {
         var value;
         if (typeof message === 'string') {
