@@ -41,7 +41,7 @@ describe 'includes', ->
   it 'dynamically add hat', ->
     input.value = 'muffin'
     pv = new PasswordValidation input
-    pv.validations.includes.hat = 'hat'
+    pv.set 'validations', includes: { hat: 'hat' }
 
     expect(pv.validate()).toContain { include: ['hat'] }
 
