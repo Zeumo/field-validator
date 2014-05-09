@@ -42,7 +42,7 @@ class PasswordValidation
       requirement if _.contains value, requirement
     errors.push exclude: excludes_errors if excludes_errors.length
 
-    errors if errors.length
+    errors
 
   defaultRegex: (regex, fallback) ->
     if regex instanceof RegExp

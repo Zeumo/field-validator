@@ -54,7 +54,7 @@ describe 'valid password', ->
       numbers: true
       symbols: true
 
-    expect(pv.validate()).toEqual undefined
+    expect(pv.validate()).toEqual []
 
   it "is invalid", ->
     input.value = 'hat'
