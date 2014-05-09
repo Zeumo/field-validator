@@ -2,26 +2,19 @@ module.exports = (grunt) ->
   require('load-grunt-tasks')(grunt)
 
   grunt.initConfig
+    pkg: grunt.file.readJSON 'package.json'
+
     watch:
       src:
         files: 'src/*'
-        tasks: ["coffee:test"]
+        tasks: ["coffee:dist"]
 
       spec:
         files: 'spec/*'
         tasks: ["coffee:spec"]
 
     coffee:
-      dev:
-        files: [
-          expand: true
-          cwd: 'src'
-          src: ['*.coffee']
-          dest: '.tmp/'
-          ext: '.js'
-        ]
-
-      test:
+      dist:
         options:
           bare: true
 
@@ -45,4 +38,18 @@ module.exports = (grunt) ->
           ext: '.js'
         ]
 
-  grunt.registerTask 'default', ['coffee:test', 'coffee:spec', 'watch']
+    concat:
+      options:
+        banner: "
+/*\n
+<%= pkg.name %> <%= pkg.version %>\n
+<%= pkg.description %>\n
+<%= pkg.license %>\n
+<%= grunt.template.today('yyyy-mm-dd') %>\n
+*/\n
+        "
+      dist:
+        src: '.tmp/password-validation.js'
+        dest: 'dist/password-validation.js'
+
+  grunt.registerTask 'default', ['coffee:dist', 'coffee:spec', 'watch']

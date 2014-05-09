@@ -2,6 +2,8 @@
 
   A UI lib handling password validation feedback
 
+  Depends on Lodash (or Underscore).
+
 # Usage
 
     new PasswordValidation(document.getElementById('password'), validations)
@@ -21,7 +23,7 @@ An array of `includes` and `excludes` can also be used to define more complex ru
 # Example
 
 ``` javascript
-var validator = new PasswordValidator($('#password')[0], {
+var validator = new PasswordValidation($('#password')[0], {
   length: 6,
   uppercase: true,
   lowercase: true,
