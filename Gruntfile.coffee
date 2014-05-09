@@ -53,3 +53,4 @@ module.exports = (grunt) ->
         dest: 'dist/password-validation.js'
 
   grunt.registerTask 'default', ['coffee:dist', 'coffee:spec', 'watch']
+  grunt.registerTask 'dist', ['coffee:dist', 'concat']

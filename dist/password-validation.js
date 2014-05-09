@@ -9,7 +9,7 @@ MIT
 PasswordValidation = (function() {
   function PasswordValidation(el, validations) {
     this.el = el;
-    this.validations = _.extend(this.validations, validations);
+    this.validations = validations;
   }
 
   PasswordValidation.prototype.validations = {
@@ -22,8 +22,15 @@ PasswordValidation = (function() {
     excludes: []
   };
 
+  PasswordValidation.prototype.matchers = {
+    lowercase: /[a-z]/,
+    uppercase: /[A-Z]/,
+    numbers: /[0-9]/,
+    symbols: /[^a-zA-Z\d\s]/
+  };
+
   PasswordValidation.prototype.validate = function() {
-    var errors, value;
+    var errors, excludes_errors, includes_errors, value;
     value = this.el.value;
     errors = [];
     if (this.validations.length) {
@@ -31,28 +38,45 @@ PasswordValidation = (function() {
         errors.push('length');
       }
     }
-    if (this.validations.lowercase) {
-      if (!/[a-z]/.test(value)) {
-        errors.push('lowercase');
+    _.each(this.matchers, (function(_this) {
+      return function(regex, validation) {
+        if (_this.validations[validation]) {
+          if (!_this.defaultRegex(_this.validations[validation], regex).test(value)) {
+            return errors.push(validation);
+          }
+        }
+      };
+    })(this));
+    includes_errors = _.compact(_.map(this.validations.includes, function(requirement) {
+      if (!_.contains(value, requirement)) {
+        return requirement;
       }
+    }));
+    if (includes_errors.length) {
+      errors.push({
+        include: includes_errors
+      });
     }
-    if (this.validations.uppercase) {
-      if (!/[A-Z]/.test(value)) {
-        errors.push('uppercase');
+    excludes_errors = _.compact(_.map(this.validations.excludes, function(requirement) {
+      if (_.contains(value, requirement)) {
+        return requirement;
       }
+    }));
+    if (excludes_errors.length) {
+      errors.push({
+        exclude: excludes_errors
+      });
     }
-    if (this.validations.numbers) {
-      if (!/[0-9]/.test(value)) {
-        errors.push('numbers');
-      }
-    }
-    if (this.validations.symbols) {
-      if (!/\W/.test(value)) {
-        errors.push('symbols');
-      }
-    }
-    if (errors !== []) {
+    if (errors.length) {
       return errors;
+    }
+  };
+
+  PasswordValidation.prototype.defaultRegex = function(regex, fallback) {
+    if (regex instanceof RegExp) {
+      return regex;
+    } else {
+      return fallback;
     }
   };
 
