@@ -1,6 +1,6 @@
 class PasswordValidation
 
-  constructor: (@el, validations) ->
+  constructor: (@el, validations = {}) ->
     @validations = _.defaults validations, @validations
     @assignMessages()
 
@@ -10,8 +10,8 @@ class PasswordValidation
     uppercase: false
     numbers: false
     symbols: false
-    includes: []
-    excludes: []
+    includes: {}
+    excludes: {}
 
   matchers:
     lowercase: /[a-z]/
@@ -25,6 +25,8 @@ class PasswordValidation
     uppercase: 'an uppercase letter'
     numbers: 'a number'
     symbols: 'a symbol'
+    includes: {}
+    excludes: {}
 
   validate: ->
     value  = @el.value

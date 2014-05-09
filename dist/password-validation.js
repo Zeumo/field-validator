@@ -9,6 +9,9 @@ MIT
 PasswordValidation = (function() {
   function PasswordValidation(el, validations) {
     this.el = el;
+    if (validations == null) {
+      validations = {};
+    }
     this.validations = _.defaults(validations, this.validations);
     this.assignMessages();
   }
@@ -19,8 +22,8 @@ PasswordValidation = (function() {
     uppercase: false,
     numbers: false,
     symbols: false,
-    includes: [],
-    excludes: []
+    includes: {},
+    excludes: {}
   };
 
   PasswordValidation.prototype.matchers = {
@@ -35,7 +38,9 @@ PasswordValidation = (function() {
     lowercase: 'a lowercase letter',
     uppercase: 'an uppercase letter',
     numbers: 'a number',
-    symbols: 'a symbol'
+    symbols: 'a symbol',
+    includes: {},
+    excludes: {}
   };
 
   PasswordValidation.prototype.validate = function() {
