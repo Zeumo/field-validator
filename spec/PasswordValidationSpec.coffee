@@ -38,6 +38,13 @@ describe 'includes', ->
     pv = new PasswordValidation input, includes: ['hat']
     expect(pv.validate()).toContain { include: ['hat'] }
 
+  it 'dynamically add hat', ->
+    input.value = 'muffin'
+    pv = new PasswordValidation input
+    pv.validations.includes.hat = 'hat'
+
+    expect(pv.validate()).toContain { include: ['hat'] }
+
 describe 'excluded', ->
   it 'must exclude "hat"', ->
     input.value = 'hatmuffin'
