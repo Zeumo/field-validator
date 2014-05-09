@@ -7,11 +7,11 @@ module.exports = (grunt) ->
     watch:
       src:
         files: 'src/*'
-        tasks: ["coffee:dist"]
+        tasks: ['coffee:dist', 'concat']
 
       spec:
         files: 'spec/*'
-        tasks: ["coffee:spec"]
+        tasks: ['coffee:spec']
 
     coffee:
       dist:
