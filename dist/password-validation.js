@@ -10,6 +10,11 @@ PasswordValidation = (function() {
   function PasswordValidation(el, validations) {
     this.el = el;
     this.validations = validations;
+    _.each(this.messages, (function(_this) {
+      return function(message, validation) {
+        return _this.messages[validation] = _this.template(message, _this.validations);
+      };
+    })(this));
   }
 
   PasswordValidation.prototype.validations = {
@@ -27,6 +32,14 @@ PasswordValidation = (function() {
     uppercase: /[A-Z]/,
     numbers: /[0-9]/,
     symbols: /[^a-zA-Z\d\s]/
+  };
+
+  PasswordValidation.prototype.messages = {
+    length: 'at least {length} characters',
+    lowercase: 'a lowercase letter',
+    uppercase: 'an uppercase letter',
+    numbers: 'a number',
+    symbols: 'a symbol'
   };
 
   PasswordValidation.prototype.validate = function() {
@@ -76,6 +89,14 @@ PasswordValidation = (function() {
     } else {
       return fallback;
     }
+  };
+
+  PasswordValidation.prototype.template = function(s, d) {
+    var p;
+    for (p in d) {
+      s = s.replace(new RegExp("{" + p + "}", 'g'), d[p]);
+    }
+    return s;
   };
 
   return PasswordValidation;

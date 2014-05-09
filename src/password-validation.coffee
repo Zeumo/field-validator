@@ -1,6 +1,8 @@
 class PasswordValidation
 
   constructor: (@el, @validations) ->
+    _.each @messages, (message, validation) =>
+      @messages[validation] = @template message, @validations
 
   validations:
     length: 0
@@ -16,6 +18,13 @@ class PasswordValidation
     uppercase: /[A-Z]/
     numbers: /[0-9]/
     symbols: /[^a-zA-Z\d\s]/
+
+  messages:
+    length: 'at least {length} characters'
+    lowercase: 'a lowercase letter'
+    uppercase: 'an uppercase letter'
+    numbers: 'a number'
+    symbols: 'a symbol'
 
   validate: ->
     value  = @el.value
@@ -49,3 +58,8 @@ class PasswordValidation
       regex
     else
       return fallback
+
+  template: (s, d) ->
+    for p of d
+      s = s.replace(new RegExp("{#{p}}", 'g'), d[p])
+    s
