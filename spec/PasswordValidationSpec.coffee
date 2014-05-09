@@ -66,3 +66,8 @@ describe 'valid password', ->
       symbols: true
 
     expect(pv.validate()).toEqual ['length', 'uppercase', 'numbers', 'symbols']
+
+describe 'messages', ->
+  it "supports templated message strings", ->
+    pv = new PasswordValidation input, length: 6
+    expect(pv.messages.length).toEqual 'at least 6 characters'
