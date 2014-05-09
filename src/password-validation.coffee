@@ -40,4 +40,4 @@ class PasswordValidation
     # includes
     # excludes
 
-    errors unless errors == []
+    errors if errors.length

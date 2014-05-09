@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Password Validation Example</title>
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+  <script src="../dist/password-validation.js"></script>
+</head>
+<body>
+  <input type="password" id="password">
+  <div class="validations"></div>
+
+  <script>
+    $(function() {
+      var validator = new PasswordValidation($('#password')[0], {
+        length: 6,
+        uppercase: true,
+        lowercase: true,
+        numbers: true,
+        symbols: true
+      });
+
+      $(document).on('keyup', '#password', function() {
+        var errors = validator.validate();
+        $(this).next('.validations').html(errors.join(', '));
+      });
+    });
+  </script>
+</body>
+</html>
