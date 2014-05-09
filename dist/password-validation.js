@@ -9,12 +9,8 @@ MIT
 PasswordValidation = (function() {
   function PasswordValidation(el, validations) {
     this.el = el;
-    this.validations = validations;
-    _.each(this.messages, (function(_this) {
-      return function(message, validation) {
-        return _this.messages[validation] = _this.template(message, _this.validations);
-      };
-    })(this));
+    this.validations = _.defaults(validations, this.validations);
+    this.assignMessages();
   }
 
   PasswordValidation.prototype.validations = {
@@ -89,6 +85,23 @@ PasswordValidation = (function() {
     } else {
       return fallback;
     }
+  };
+
+  PasswordValidation.prototype.assignMessages = function() {
+    return _.each(this.messages, (function(_this) {
+      return function(message, validation) {
+        var value;
+        if (typeof message === 'string') {
+          value = _this.template(message, _this.validations);
+        }
+        if (typeof message === 'object') {
+          _.each(message, function(v, k) {
+            return console.log(k);
+          });
+        }
+        return _this.messages[validation] = value;
+      };
+    })(this));
   };
 
   PasswordValidation.prototype.template = function(s, d) {

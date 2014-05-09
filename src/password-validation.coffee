@@ -1,8 +1,8 @@
 class PasswordValidation
 
-  constructor: (@el, @validations) ->
-    _.each @messages, (message, validation) =>
-      @messages[validation] = @template message, @validations
+  constructor: (@el, validations) ->
+    @validations = _.defaults validations, @validations
+    @assignMessages()
 
   validations:
     length: 0
@@ -58,6 +58,18 @@ class PasswordValidation
       regex
     else
       return fallback
+
+  assignMessages: ->
+    _.each @messages, (message, validation) =>
+
+      if typeof message == 'string'
+        value = @template message, @validations
+
+      if typeof message == 'object'
+        _.each message, (v, k) ->
+          console.log k
+
+      @messages[validation] = value
 
   template: (s, d) ->
     for p of d
