@@ -20,17 +20,19 @@ An array of `includes` and `excludes` can also be used to define more complex ru
 
 # Usage
 
-    var validator = new PasswordValidator($('#password')[0], {
-      length: 6,
-      uppercase: true,
-      lowercase: true,
-      numbers: true,
-      symbols: true
-    });
+``` javascript
+var validator = new PasswordValidator($('#password')[0], {
+  length: 6,
+  uppercase: true,
+  lowercase: true,
+  numbers: true,
+  symbols: true
+});
 
-    $(document).on('keyup', '#password', function() {
-      var errors = validator.validate();
-    });
+$(document).on('keyup', '#password', function() {
+  var errors = validator.validate();
+});
+```
 
 # Tests
 
