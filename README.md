@@ -4,9 +4,19 @@
 
 # Usage
 
-    new PasswordValidation(document.getElementById('password'), options)
+    new PasswordValidation(document.getElementById('password'), validations)
 
-# API
+# Validations
+
+By default, all validations are disabled. Core validations:
+
+* length
+* lowercase
+* uppercase
+* numbers
+* symbols
+
+An array of `includes` and `excludes` can also be used to define more complex rules.
 
 # Tests
 
