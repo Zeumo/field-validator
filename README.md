@@ -10,13 +10,15 @@
 
 # Validations
 
-By default, all validations are disabled. Core validations:
+By default, validations are disabled. Core validations are:
 
 * length
 * lowercase
 * uppercase
 * numbers
 * symbols
+
+A validation can be a Boolean or RegExp to override the default matchers.
 
 An array of `includes` and `excludes` can also be used to define more complex rules.
 
