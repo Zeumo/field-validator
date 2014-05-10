@@ -2,8 +2,8 @@ class PasswordValidation
 
   constructor: (@el, validations = {}) ->
     @validations = _.defaults validations, @_validations
-    @updateMatchers()
-    @updateMessages()
+    @setMatchers()
+    @setMessages()
 
   _validations:
     include:
@@ -99,23 +99,33 @@ class PasswordValidation
       _.map set, (req) =>
         @template @_messages[req], @validations[key]
 
-  updateMessages: ->
-    # Copy _validations to _messages
+  setValidations: (object) ->
+    _.merge @validations, object
+    @setMatchers()
+    @setMessages()
+
+  setMessages: ->
+    # Copy validations to messages
     _.each @validations, (set, type) =>
       _.each set, (v, k) =>
-        unless @_messages[k] or (/length/i).test k
+        unless typeof v != 'string' or (/length/i).test k
           @_messages[k] = "#{k.replace('_', ' ')}: #{v}"
 
-  updateMatchers: ->
+  setMatchers: ->
     # Copy validations to matchers
     _.each @validations, (set) =>
       _.each set, (val, validation) =>
-          @_matchers = _.defaults @_matchers, set
+        if typeof val == 'string'
+          @_matchers[validation] = val
 
     # Convert strings to regex
     _.each @_matchers, (v, k) =>
       if typeof v == 'string'
         @_matchers[k] = new RegExp v
+
+      # Remove anything that isn't regex
+      unless @_matchers[k] instanceof RegExp
+        delete @_matchers[k]
 
   toList: (messageType) ->
     messages = this[messageType]

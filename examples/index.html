@@ -62,7 +62,7 @@
 </head>
 <body>
   <form action="">
-    <input type="text" id="email" value="nic@zeumo.com" placeholder="Email"> <br>
+    <input type="text" id="email" value="stan@example.com" placeholder="Email"> <br>
     <input type="password" id="password" placeholder="Password" autofocus>
     <div class="validations">
       <span class="lowercase">a-z</span>
@@ -77,7 +77,7 @@
 
   <script>
     $(function() {
-      var validator = new PasswordValidation($('#password')[0], {
+      window.validator = new PasswordValidation($('#password')[0], {
           include: {
             minLength: 6,
             uppercase: true,
@@ -91,11 +91,14 @@
           }
       });
 
-    // $(document).on('blur', '#email', function() {
-    //   validator.set('validations', {
-    //     excludes: [$(this).val()]
-    //   });
-    // });
+    $(document).on('blur', '#email', function() {
+      validator.setValidations({
+        exclude: {
+          email: $(this).val(),
+          partial_email: $(this).val().split('@')[0]
+        }
+      });
+    });
 
       $(document).on('keyup', '#password', _.debounce(function() {
         var errors = validator.validate();

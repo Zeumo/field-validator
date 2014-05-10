@@ -13,8 +13,8 @@ PasswordValidation = (function() {
       validations = {};
     }
     this.validations = _.defaults(validations, this._validations);
-    this.updateMatchers();
-    this.updateMessages();
+    this.setMatchers();
+    this.setMessages();
   }
 
   PasswordValidation.prototype._validations = {
@@ -141,11 +141,17 @@ PasswordValidation = (function() {
     })(this)));
   };
 
-  PasswordValidation.prototype.updateMessages = function() {
+  PasswordValidation.prototype.setValidations = function(object) {
+    _.merge(this.validations, object);
+    this.setMatchers();
+    return this.setMessages();
+  };
+
+  PasswordValidation.prototype.setMessages = function() {
     return _.each(this.validations, (function(_this) {
       return function(set, type) {
         return _.each(set, function(v, k) {
-          if (!(_this._messages[k] || /length/i.test(k))) {
+          if (!(typeof v !== 'string' || /length/i.test(k))) {
             return _this._messages[k] = "" + (k.replace('_', ' ')) + ": " + v;
           }
         });
@@ -153,18 +159,23 @@ PasswordValidation = (function() {
     })(this));
   };
 
-  PasswordValidation.prototype.updateMatchers = function() {
+  PasswordValidation.prototype.setMatchers = function() {
     _.each(this.validations, (function(_this) {
       return function(set) {
         return _.each(set, function(val, validation) {
-          return _this._matchers = _.defaults(_this._matchers, set);
+          if (typeof val === 'string') {
+            return _this._matchers[validation] = val;
+          }
         });
       };
     })(this));
     return _.each(this._matchers, (function(_this) {
       return function(v, k) {
         if (typeof v === 'string') {
-          return _this._matchers[k] = new RegExp(v);
+          _this._matchers[k] = new RegExp(v);
+        }
+        if (!(_this._matchers[k] instanceof RegExp)) {
+          return delete _this._matchers[k];
         }
       };
     })(this));

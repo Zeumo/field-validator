@@ -186,3 +186,20 @@ describe 'custom validations', ->
       "Don't use partial email: name"
     ]
 
+describe 'setting validations', ->
+  it 'supports setting validations after init', ->
+    input.value = 'hatmuffin'
+    pv = new PasswordValidation input,
+      include:
+        minLength: 6
+
+    errors = pv.validate()
+    expect(errors.requirements.include).toEqual []
+
+    pv.setValidations
+      exclude:
+        lowercase: true
+
+    errors = pv.validate()
+    expect(errors.requirements.exclude).toEqual ['lowercase']
+
