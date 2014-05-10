@@ -1,0 +1,35 @@
+body {
+  font-size: 18px;
+}
+
+form {
+  margin: 100px 0;
+}
+
+.validations span {
+  display: inline-block;
+  border: 1px solid #ddd;
+  color: #aaa;
+  border-radius: 3px;
+  padding: 2px 10px;
+  font-size: 16px;
+  transition: background 200ms ease-out, border-color 200ms ease-out;
+}
+
+.validations span.active-error {
+  color: white;
+  background: #D2322D;
+  border-color: #D2322D;
+}
+.validations span.active-success {
+  color: white;
+  background: #5CB85C;
+  border-color: #5CB85C;
+}
+
+.validations .error-messages {
+  margin-top: 10px;
+  background: #f7f7f7;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

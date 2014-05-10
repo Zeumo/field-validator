@@ -4,125 +4,43 @@
   <meta charset="UTF-8">
   <title>Password Validation Example</title>
   <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css">
+  <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.4.2/pure-min.css">
+
+  <link rel="stylesheet" href="main.css">
 
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
   <script src="../dist/password-validation.js"></script>
-
-  <style>
-    body {
-      font-family: Helvetica;
-      font-size: 20px;
-    }
-
-    form {
-      padding: 20px;
-    }
-
-    button {
-      margin-top: 30px;
-    }
-
-    input {
-      padding: 10px;
-      border: 1px solid #ddd;
-      width: 300px;
-      margin-bottom: 5px;
-    }
-
-    input:focus + .validations {
-      opacity: 1;
-    }
-
-    .validations {
-      opacity: 0.4;
-    }
-
-    .validations span {
-      display: inline-block;
-      border: 1px solid #ddd;
-      color: #aaa;
-      border-radius: 3px;
-      margin-right: 3px;
-      padding: 2px 8px;
-      font-size: 16px;
-    }
-
-    .validations span.active-error {
-      color: white;
-      background: #D2322D;
-      border-color: #D2322D;
-    }
-    .validations span.active-success {
-      color: white;
-      background: #5CB85C;
-      border-color: #5CB85C;
-    }
-  </style>
+  <script src="main.js"></script>
 </head>
 <body>
-  <form action="">
-    <input type="text" id="email" value="stan@example.com" placeholder="Email"> <br>
-    <input type="password" id="password" placeholder="Password" autofocus>
-    <div class="validations">
-      <span class="lowercase">a-z</span>
-      <span class="uppercase">A-Z</span>
-      <span class="numbers">0-9</span>
-      <span class="symbols">%&$</span>
-      <span class="minLength">6+</span>
+  <div class="pure-g">
+    <div class="pure-u-1-3">
     </div>
 
-    <button>Submit</button>
-  </form>
+    <div class="pure-u-1-3">
+      <form action="" class="pure-form pure-form-stacked">
+        <label for="">Email</label>
+        <input type="text" id="email" value="stan@example.com" placeholder="Email" class="pure-input-1">
 
-  <script>
-    $(function() {
-      window.validator = new PasswordValidation($('#password')[0], {
-          include: {
-            minLength: 6,
-            uppercase: true,
-            lowercase: true,
-            numbers: true,
-            symbols: true
-          },
-          exclude: {
-            email: $('#email').val(),
-            partial_email: $('#email').val().split('@')[0]
-          }
-      });
+        <label for="">Password</label>
+        <input type="password" id="password" placeholder="Password" class="pure-input-1" autofocus>
+        <div class="validations">
+          <span class="lowercase">a-z</span>
+          <span class="uppercase">A-Z</span>
+          <span class="numbers">0-9</span>
+          <span class="symbols">%&$</span>
+          <span class="minLength">6+</span>
+        </div>
 
-    $(document).on('blur', '#email', function() {
-      validator.setValidations({
-        exclude: {
-          email: $(this).val(),
-          partial_email: $(this).val().split('@')[0]
-        }
-      });
-    });
+        <br>
+        <button class="pure-button pure-button-primary">Submit</button>
+      </form>
+    </div>
 
-      $(document).on('keyup', '#password', _.debounce(function() {
-        var errors = validator.validate();
+    <div class="pure-u-1-3"></div>
+  </div>
 
-        $('.validations').children().removeClass('active-error active-success');
-        if (!this.value) return;
 
-        $.each(errors.requirements.include, function(i, error) {
-          $('.validations').find('.' + error)
-            .addClass('active-error');
-        });
-
-        $('.validations').find(':not(.active-error)').addClass('active-success');
-      }, 300));
-
-      $(document).on('submit', 'form', function(e) {
-        e.preventDefault();
-        var errors = validator.validate();
-
-        $('.error-messages').remove();
-        if (!$('#password').val().length) return;
-        $('.validations').append(errors.toList('fullMessages'));
-      });
-    });
-  </script>
 </body>
 </html>
