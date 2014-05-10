@@ -43,6 +43,11 @@ PasswordValidation = (function() {
     symbols: 'a symbol'
   };
 
+  PasswordValidation.prototype.messagePrefixes = {
+    include: "Do use",
+    exclude: "Don't use"
+  };
+
   PasswordValidation.prototype.validate = function() {
     var errors, req;
     errors = {
@@ -117,11 +122,7 @@ PasswordValidation = (function() {
     return _.flatten(_.map(errors.requirements, (function(_this) {
       return function(set, type) {
         var prefix;
-        if (type === 'include') {
-          prefix = 'Do use';
-        } else {
-          prefix = "Don't use";
-        }
+        prefix = _this.messagePrefixes[type];
         return _.map(set, function(validation) {
           var body;
           body = _this.template(_this._messages[validation], _this.validations[type]);
