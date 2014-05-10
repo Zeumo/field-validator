@@ -10,7 +10,7 @@
 
 # Validations
 
-By default, validations are falsey--your string will validate with anything.
+By default, validations are falsey--your string will validate with any characters.
 
 Validations must be specified for `include` or `exclude`:
 
