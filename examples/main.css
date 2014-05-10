@@ -18,13 +18,13 @@ form {
 
 .validations span.active-error {
   color: white;
-  background: #D2322D;
-  border-color: #D2322D;
+  background: #DD514C;
+  border-color: #DD514C;
 }
 .validations span.active-success {
   color: white;
-  background: #5CB85C;
-  border-color: #5CB85C;
+  background: #5EB95E;
+  border-color: #5EB95E;
 }
 
 .validations .error-messages {
