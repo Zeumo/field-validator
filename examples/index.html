@@ -64,13 +64,13 @@
         lowercase: true,
         numbers: true,
         symbols: true,
-        excludes: {
-          email: $('#email').val()
-        }
+        excludes: [$('#email').val()]
       });
 
-      $(document).on('keyup', '#email', function() {
-        validator.excludes.push([this.value]);
+      $(document).on('blur', '#email', function() {
+        validator.set('validations', {
+          excludes: [$(this).val()]
+        });
       });
 
       $(document).on('keyup', '#password', function() {
@@ -79,7 +79,9 @@
         if (!this.value) return;
 
         $.each(errors, function(i, error) {
-          $('.validations').find('.' + error).addClass('active-error');
+          if (typeof error == 'string') {
+            $('.validations').find('.' + error).addClass('active-error');
+          }
         });
 
         $('.validations').find(':not(.active-error)').addClass('active-success');
@@ -88,21 +90,11 @@
       $(document).on('submit', 'form', function(e) {
         e.preventDefault();
         var errors = validator.validate();
+
         $('.error-messages').remove();
+        if (!$('#password').val().length) return;
+        $('.validations').append(errors.toList());
 
-        if (!$('#password').val().length) {
-          return;
-        }
-
-        if (errors) {
-          var $errorMessages = $("<ul>", { "class": "error-messages" });
-          $.each(errors, function(i, error) {
-            $errorMessages.append($("<li>", {
-              text: 'Please use ' + validator.messages[error]
-            }));
-          });
-          $('.validations').append($errorMessages);
-        }
       });
     });
   </script>

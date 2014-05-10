@@ -2,16 +2,14 @@ class PasswordValidation
 
   constructor: (@el, validations = {}) ->
     @validations = _.defaults validations, @_validations
-    @assignMessages()
 
   _validations:
-    length: 0
-    lowercase: false
-    uppercase: false
-    numbers: false
-    symbols: false
-    includes: {}
-    excludes: {}
+    include:
+      minLength: 0
+      lowercase: false
+      uppercase: false
+      numbers: false
+      symbols: false
 
   _matchers:
     lowercase: /[a-z]/
@@ -20,43 +18,76 @@ class PasswordValidation
     symbols: /[^a-zA-Z\d\s]/
 
   _messages:
-    length: 'at least {length} characters'
+    minLength: 'at least {minLength} characters'
+    maxLength: 'shorter than {minLength} characters'
     lowercase: 'a lowercase letter'
     uppercase: 'an uppercase letter'
     numbers: 'a number'
     symbols: 'a symbol'
-    includes: {}
-    excludes: {}
-
-  set: (k, v) ->
-    this[k] = v
 
   validate: ->
     value  = @el.value
-    errors = []
+    errors =
+      requirements: {
+        include: @validateType('include')
+        exclude: @validateType('exclude')
+      }
+      messages: []
+      fullMessages: []
+      toList: @toList
 
-    # Test length
-    if @validations.length
-      unless value.length >= @validations.length
-        errors.push 'length'
+    errors.requirements.include = _.compact _.flatten errors.requirements.include
+    errors.requirements.exclude = _.compact _.flatten errors.requirements.exclude
 
-    # Test matchers
-    _.each @_matchers, (regex, validation) =>
-      if @validations[validation]
-        unless @defaultRegex(@validations[validation], regex).test(value)
-          errors.push validation
+    delete errors.requirements.include if _.isEmpty errors.requirements.include
+    delete errors.requirements.exclude if _.isEmpty errors.requirements.exclude
 
-    # # Test includes
-    includes_errors = _.compact _.map @validations.includes, (requirement) ->
-      requirement unless _.contains value, requirement
-    errors.push include: includes_errors if includes_errors.length
-
-    # Test excludes
-    excludes_errors = _.compact _.map @validations.excludes, (requirement) ->
-      requirement if _.contains value, requirement
-    errors.push exclude: excludes_errors if excludes_errors.length
+    errors.messages     = @createMessages(errors.requirements)
+    errors.fullMessages = @createFullMessages(errors.messages)
 
     errors
+
+  validateType: (type) ->
+    value = @el.value
+
+    _.map @validations[type], (re, validation) =>
+      if (/length/i).test validation
+        @validateLength(value, type)
+      else
+        @validateMatcher(value, type, validation)
+
+  validateLength: (value, type) ->
+    if type == 'include'
+      validation = 'minLength'
+      if length = @validations[type][validation]
+        unless value.length >= length
+          return validation
+
+    if type == 'exclude'
+      validation = 'maxLength'
+      if length = @validations[type][validation]
+        if value.length >= length
+          return validation
+
+  validateMatcher: (value, type, validation) ->
+    if v = @validations[type][validation]
+      if type == 'include'
+        unless @defaultRegex(v, @_matchers[validation]).test(value)
+          return validation
+
+      if type == 'exclude'
+        if @defaultRegex(v, @_matchers[validation]).test(value)
+          return validation
+
+  validateExcludes: (value) ->
+    excludes = _.compact _.map _.keys(@validations), (key) ->
+      key if /^exclude/.test key
+
+    validations = _.map excludes, (key) =>
+      @validations[key]
+
+    _.map validations, (validation) ->
+      validation if _.contains value, validation
 
   defaultRegex: (regex, fallback) ->
     if regex instanceof RegExp
@@ -64,20 +95,31 @@ class PasswordValidation
     else
       return fallback
 
-  assignMessages: ->
-    @messages = _.clone @_messages
-    _.each @_messages, (message, validation) =>
+  createFullMessages: (messages) ->
+    _.map messages, (message) ->
+      "Please use #{message}"
 
-      if typeof message == 'string'
-        value = @template message, @validations
+  createMessages: (requirements) ->
+    _.flatten _.map requirements, (set, key) =>
+      _.map set, (req) =>
+        @template @_messages[req], @validations[key]
 
-      if typeof message == 'object'
-        _.each message, (v, k) ->
-          console.log k
+  toList: (messageType) ->
+    messages = this[messageType]
+    $list = document.createElement('ul')
+    $list.className = 'error-messages'
 
-      @messages[validation] = value
+    _.each messages, (message) ->
+      item = document.createElement('li')
+      item.innerHTML = message
+      $list.appendChild item
+
+    $list
 
   template: (s, d) ->
     for p of d
       s = s.replace(new RegExp("{#{p}}", 'g'), d[p])
     s
+
+  set: (k, v) ->
+    this[k] = v

@@ -2,7 +2,7 @@
 password-validation 0.1.0
 A UI lib handling password validation feedback
 MIT
-2014-05-09
+2014-05-10
 */
         var PasswordValidation;
 
@@ -13,17 +13,16 @@ PasswordValidation = (function() {
       validations = {};
     }
     this.validations = _.defaults(validations, this._validations);
-    this.assignMessages();
   }
 
   PasswordValidation.prototype._validations = {
-    length: 0,
-    lowercase: false,
-    uppercase: false,
-    numbers: false,
-    symbols: false,
-    includes: {},
-    excludes: {}
+    include: {
+      minLength: 0,
+      lowercase: false,
+      uppercase: false,
+      numbers: false,
+      symbols: false
+    }
   };
 
   PasswordValidation.prototype._matchers = {
@@ -34,58 +33,106 @@ PasswordValidation = (function() {
   };
 
   PasswordValidation.prototype._messages = {
-    length: 'at least {length} characters',
+    minLength: 'at least {minLength} characters',
+    maxLength: 'shorter than {minLength} characters',
     lowercase: 'a lowercase letter',
     uppercase: 'an uppercase letter',
     numbers: 'a number',
-    symbols: 'a symbol',
-    includes: {},
-    excludes: {}
-  };
-
-  PasswordValidation.prototype.set = function(k, v) {
-    return this[k] = v;
+    symbols: 'a symbol'
   };
 
   PasswordValidation.prototype.validate = function() {
-    var errors, excludes_errors, includes_errors, value;
+    var errors, value;
     value = this.el.value;
-    errors = [];
-    if (this.validations.length) {
-      if (!(value.length >= this.validations.length)) {
-        errors.push('length');
-      }
+    errors = {
+      requirements: {
+        include: this.validateType('include'),
+        exclude: this.validateType('exclude')
+      },
+      messages: [],
+      fullMessages: [],
+      toList: this.toList
+    };
+    errors.requirements.include = _.compact(_.flatten(errors.requirements.include));
+    errors.requirements.exclude = _.compact(_.flatten(errors.requirements.exclude));
+    if (_.isEmpty(errors.requirements.include)) {
+      delete errors.requirements.include;
     }
-    _.each(this._matchers, (function(_this) {
-      return function(regex, validation) {
-        if (_this.validations[validation]) {
-          if (!_this.defaultRegex(_this.validations[validation], regex).test(value)) {
-            return errors.push(validation);
-          }
+    if (_.isEmpty(errors.requirements.exclude)) {
+      delete errors.requirements.exclude;
+    }
+    errors.messages = this.createMessages(errors.requirements);
+    errors.fullMessages = this.createFullMessages(errors.messages);
+    return errors;
+  };
+
+  PasswordValidation.prototype.validateType = function(type) {
+    var value;
+    value = this.el.value;
+    return _.map(this.validations[type], (function(_this) {
+      return function(re, validation) {
+        if (/length/i.test(validation)) {
+          return _this.validateLength(value, type);
+        } else {
+          return _this.validateMatcher(value, type, validation);
         }
       };
     })(this));
-    includes_errors = _.compact(_.map(this.validations.includes, function(requirement) {
-      if (!_.contains(value, requirement)) {
-        return requirement;
+  };
+
+  PasswordValidation.prototype.validateLength = function(value, type) {
+    var length, validation;
+    if (type === 'include') {
+      validation = 'minLength';
+      if (length = this.validations[type][validation]) {
+        if (!(value.length >= length)) {
+          return validation;
+        }
+      }
+    }
+    if (type === 'exclude') {
+      validation = 'maxLength';
+      if (length = this.validations[type][validation]) {
+        if (value.length >= length) {
+          return validation;
+        }
+      }
+    }
+  };
+
+  PasswordValidation.prototype.validateMatcher = function(value, type, validation) {
+    var v;
+    if (v = this.validations[type][validation]) {
+      if (type === 'include') {
+        if (!this.defaultRegex(v, this._matchers[validation]).test(value)) {
+          return validation;
+        }
+      }
+      if (type === 'exclude') {
+        if (this.defaultRegex(v, this._matchers[validation]).test(value)) {
+          return validation;
+        }
+      }
+    }
+  };
+
+  PasswordValidation.prototype.validateExcludes = function(value) {
+    var excludes, validations;
+    excludes = _.compact(_.map(_.keys(this.validations), function(key) {
+      if (/^exclude/.test(key)) {
+        return key;
       }
     }));
-    if (includes_errors.length) {
-      errors.push({
-        include: includes_errors
-      });
-    }
-    excludes_errors = _.compact(_.map(this.validations.excludes, function(requirement) {
-      if (_.contains(value, requirement)) {
-        return requirement;
+    validations = _.map(excludes, (function(_this) {
+      return function(key) {
+        return _this.validations[key];
+      };
+    })(this));
+    return _.map(validations, function(validation) {
+      if (_.contains(value, validation)) {
+        return validation;
       }
-    }));
-    if (excludes_errors.length) {
-      errors.push({
-        exclude: excludes_errors
-      });
-    }
-    return errors;
+    });
   };
 
   PasswordValidation.prototype.defaultRegex = function(regex, fallback) {
@@ -96,22 +143,34 @@ PasswordValidation = (function() {
     }
   };
 
-  PasswordValidation.prototype.assignMessages = function() {
-    this.messages = _.clone(this._messages);
-    return _.each(this._messages, (function(_this) {
-      return function(message, validation) {
-        var value;
-        if (typeof message === 'string') {
-          value = _this.template(message, _this.validations);
-        }
-        if (typeof message === 'object') {
-          _.each(message, function(v, k) {
-            return console.log(k);
-          });
-        }
-        return _this.messages[validation] = value;
+  PasswordValidation.prototype.createFullMessages = function(messages) {
+    return _.map(messages, function(message) {
+      return "Please use " + message;
+    });
+  };
+
+  PasswordValidation.prototype.createMessages = function(requirements) {
+    return _.flatten(_.map(requirements, (function(_this) {
+      return function(set, key) {
+        return _.map(set, function(req) {
+          return _this.template(_this._messages[req], _this.validations[key]);
+        });
       };
-    })(this));
+    })(this)));
+  };
+
+  PasswordValidation.prototype.toList = function(messageType) {
+    var $list, messages;
+    messages = this[messageType];
+    $list = document.createElement('ul');
+    $list.className = 'error-messages';
+    _.each(messages, function(message) {
+      var item;
+      item = document.createElement('li');
+      item.innerHTML = message;
+      return $list.appendChild(item);
+    });
+    return $list;
   };
 
   PasswordValidation.prototype.template = function(s, d) {
@@ -120,6 +179,10 @@ PasswordValidation = (function() {
       s = s.replace(new RegExp("{" + p + "}", 'g'), d[p]);
     }
     return s;
+  };
+
+  PasswordValidation.prototype.set = function(k, v) {
+    return this[k] = v;
   };
 
   return PasswordValidation;
