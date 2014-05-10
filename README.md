@@ -4,11 +4,11 @@
 
   Depends on Lodash (or Underscore).
 
-# Usage
+## Usage
 
     new PasswordValidation(document.getElementById('password'), validations)
 
-# Validations
+## Validations
 
 By default, validations are falsey--your string will validate with any characters.
 
@@ -37,7 +37,7 @@ When matching length with `excludes` use `maxLength`.
 
 A validation can be a Boolean or RegExp to override the default matchers.
 
-# Example
+## Example
 
 A complete example can be found in `examples/`.
 
@@ -60,17 +60,17 @@ $(document).on('keyup', '#password', function() {
 });
 ```
 
-# Tests
+## Tests
 
 Run `spec/SpecRunner.html`
 
-# Contributing
+## Contributing
 
 * Clone the project
 * Run `npm install`
 * Do your thing on a feature branch with tests
 * Send a pull request
 
-# License
+## License
 
 MIT
