@@ -49,9 +49,9 @@ FieldValidator = (function() {
   };
 
   FieldValidator.prototype.validate = function() {
-    var errors, req;
-    errors = {
-      requirements: {
+    var errors, status;
+    status = {
+      errors: {
         include: this.validateType('include'),
         exclude: this.validateType('exclude')
       },
@@ -59,14 +59,14 @@ FieldValidator = (function() {
       fullMessages: [],
       toList: this.toList
     };
-    req = errors.requirements;
-    req.include = _.compact(_.flatten(req.include));
-    req.exclude = _.compact(_.flatten(req.exclude));
-    errors.valid = !req.include.length && !req.exclude.length;
-    errors.requirements = req;
-    errors.messages = this.createMessages(errors);
-    errors.fullMessages = this.createFullMessages(errors);
-    return errors;
+    errors = status.errors;
+    errors.include = _.compact(_.flatten(errors.include));
+    errors.exclude = _.compact(_.flatten(errors.exclude));
+    status.valid = !errors.include.length && !errors.exclude.length;
+    status.errors = errors;
+    status.messages = this.createMessages(status);
+    status.fullMessages = this.createFullMessages(status);
+    return status;
   };
 
   FieldValidator.prototype.validateType = function(type) {
@@ -118,8 +118,8 @@ FieldValidator = (function() {
     }
   };
 
-  FieldValidator.prototype.createFullMessages = function(errors) {
-    return _.flatten(_.map(errors.requirements, (function(_this) {
+  FieldValidator.prototype.createFullMessages = function(status) {
+    return _.flatten(_.map(status.errors, (function(_this) {
       return function(set, type) {
         var prefix;
         prefix = _this.messagePrefixes[type];
@@ -132,8 +132,8 @@ FieldValidator = (function() {
     })(this)));
   };
 
-  FieldValidator.prototype.createMessages = function(errors) {
-    return _.flatten(_.map(errors.requirements, (function(_this) {
+  FieldValidator.prototype.createMessages = function(status) {
+    return _.flatten(_.map(status.errors, (function(_this) {
       return function(set, key) {
         return _.map(set, function(req) {
           return _this.template(_this._messages[req], _this.validations[key]);

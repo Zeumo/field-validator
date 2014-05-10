@@ -32,8 +32,8 @@ class FieldValidator
     exclude: "Don't use"
 
   validate: ->
-    errors =
-      requirements: {
+    status =
+      errors: {
         include: @validateType('include')
         exclude: @validateType('exclude')
       }
@@ -41,19 +41,18 @@ class FieldValidator
       fullMessages: []
       toList: @toList
 
-    req = errors.requirements
+    errors = status.errors
 
-    req.include = _.compact _.flatten req.include
-    req.exclude = _.compact _.flatten req.exclude
+    errors.include = _.compact _.flatten errors.include
+    errors.exclude = _.compact _.flatten errors.exclude
 
-    errors.valid = !req.include.length and
-                   !req.exclude.length
+    status.valid = !errors.include.length and !errors.exclude.length
 
-    errors.requirements = req
-    errors.messages     = @createMessages(errors)
-    errors.fullMessages = @createFullMessages(errors)
+    status.errors       = errors
+    status.messages     = @createMessages(status)
+    status.fullMessages = @createFullMessages(status)
 
-    errors
+    status
 
   validateType: (type) ->
     value = @el.value
@@ -87,16 +86,16 @@ class FieldValidator
         if @_matchers[validation].test(value)
           return validation
 
-  createFullMessages: (errors) ->
-    _.flatten _.map errors.requirements, (set, type) =>
+  createFullMessages: (status) ->
+    _.flatten _.map status.errors, (set, type) =>
       prefix = @messagePrefixes[type]
 
       _.map set, (validation) =>
         body = @template @_messages[validation], @validations[type]
         [prefix, body].join(' ')
 
-  createMessages: (errors) ->
-    _.flatten _.map errors.requirements, (set, key) =>
+  createMessages: (status) ->
+    _.flatten _.map status.errors, (set, key) =>
       _.map set, (req) =>
         @template @_messages[req], @validations[key]
 

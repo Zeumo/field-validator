@@ -7,8 +7,8 @@ describe 'validations (includes)', ->
       include:
         minLength: 6
 
-    errors = pv.validate()
-    expect(errors.requirements.include).toEqual [ 'minLength' ]
+    status = pv.validate()
+    expect(status.errors.include).toEqual [ 'minLength' ]
 
   it "lowercase", ->
     input.value = 'HATMUFFIN'
@@ -16,8 +16,8 @@ describe 'validations (includes)', ->
       include:
         lowercase: true
 
-    errors = pv.validate()
-    expect(errors.requirements.include).toEqual ['lowercase']
+    status = pv.validate()
+    expect(status.errors.include).toEqual ['lowercase']
 
   it "uppercase", ->
     input.value = 'hatmuffin'
@@ -25,8 +25,8 @@ describe 'validations (includes)', ->
       include:
         uppercase: true
 
-    errors = pv.validate()
-    expect(errors.requirements.include).toEqual ['uppercase']
+    status = pv.validate()
+    expect(status.errors.include).toEqual ['uppercase']
 
   it "numbers", ->
     input.value = 'hatmuffin'
@@ -34,8 +34,8 @@ describe 'validations (includes)', ->
       include:
         numbers: true
 
-    errors = pv.validate()
-    expect(errors.requirements.include).toEqual ['numbers']
+    status = pv.validate()
+    expect(status.errors.include).toEqual ['numbers']
 
   it "symbols", ->
     input.value = 'hatmuffin'
@@ -43,8 +43,8 @@ describe 'validations (includes)', ->
       include:
         symbols: true
 
-    errors = pv.validate()
-    expect(errors.requirements.include).toEqual ['symbols']
+    status = pv.validate()
+    expect(status.errors.include).toEqual ['symbols']
 
 describe 'validations (excludes)', ->
   it "length", ->
@@ -53,8 +53,8 @@ describe 'validations (excludes)', ->
       exclude:
         maxLength: 2
 
-    errors = pv.validate()
-    expect(errors.requirements.exclude).toEqual [ 'maxLength' ]
+    status = pv.validate()
+    expect(status.errors.exclude).toEqual ['maxLength']
 
   it "lowercase", ->
     input.value = 'hatmuffin'
@@ -62,8 +62,8 @@ describe 'validations (excludes)', ->
       exclude:
         lowercase: true
 
-    errors = pv.validate()
-    expect(errors.requirements.exclude).toEqual ['lowercase']
+    status = pv.validate()
+    expect(status.errors.exclude).toEqual ['lowercase']
 
   it "uppercase", ->
     input.value = 'HATMUFFIN'
@@ -71,8 +71,8 @@ describe 'validations (excludes)', ->
       exclude:
         uppercase: true
 
-    errors = pv.validate()
-    expect(errors.requirements.exclude).toEqual ['uppercase']
+    status = pv.validate()
+    expect(status.errors.exclude).toEqual ['uppercase']
 
   it "numbers", ->
     input.value = 'hatmuFFin!1101'
@@ -80,8 +80,8 @@ describe 'validations (excludes)', ->
       exclude:
         numbers: true
 
-    errors = pv.validate()
-    expect(errors.requirements.exclude).toEqual ['numbers']
+    status = pv.validate()
+    expect(status.errors.exclude).toEqual ['numbers']
 
   it "symbols", ->
     input.value = 'hatmuffin!_'
@@ -89,8 +89,8 @@ describe 'validations (excludes)', ->
       exclude:
         symbols: true
 
-    errors = pv.validate()
-    expect(errors.requirements.exclude).toEqual ['symbols']
+    status = pv.validate()
+    expect(status.errors.exclude).toEqual ['symbols']
 
 describe 'valid password', ->
   it "is valid", ->
@@ -103,8 +103,8 @@ describe 'valid password', ->
         numbers: true
         symbols: true
 
-    errors = pv.validate()
-    expect(errors.valid).toBe true
+    status = pv.validate()
+    expect(status.valid).toBe true
 
   it "is invalid", ->
     input.value = 'hat'
@@ -116,9 +116,9 @@ describe 'valid password', ->
         numbers: true
         symbols: true
 
-    errors = pv.validate()
-    expect(errors.valid).toBe false
-    expect(errors.requirements.include).toEqual ['minLength', 'uppercase', 'numbers', 'symbols']
+    status = pv.validate()
+    expect(status.valid).toBe false
+    expect(status.errors.include).toEqual ['minLength', 'uppercase', 'numbers', 'symbols']
 
 describe 'errors', ->
   it 'has requirements', ->
@@ -127,8 +127,8 @@ describe 'errors', ->
       include:
         minLength: 6
 
-    errors = pv.validate()
-    expect(errors.requirements.include).toEqual ['minLength']
+    status = pv.validate()
+    expect(status.errors.include).toEqual ['minLength']
 
   it 'has messages', ->
     input.value = ''
@@ -136,8 +136,8 @@ describe 'errors', ->
       include:
         minLength: 6
 
-    errors = pv.validate()
-    expect(errors.messages).toEqual ['at least 6 characters']
+    status = pv.validate()
+    expect(status.messages).toEqual ['at least 6 characters']
 
   it 'has fullMessages', ->
     input.value = ''
@@ -145,8 +145,8 @@ describe 'errors', ->
       include:
         minLength: 6
 
-    errors = pv.validate()
-    expect(errors.fullMessages).toEqual ['Do use at least 6 characters']
+    status = pv.validate()
+    expect(status.fullMessages).toEqual ['Do use at least 6 characters']
 
   it 'can create list from messages', ->
     input.value = ''
@@ -154,8 +154,8 @@ describe 'errors', ->
       include:
         minLength: 6
 
-    errors = pv.validate()
-    expect(errors.toList('fullMessages').outerHTML).toEqual "
+    status = pv.validate()
+    expect(status.toList('fullMessages').outerHTML).toEqual "
       <ul class=\"error-messages\"><li>Do use at least 6 characters</li></ul>
     "
 
@@ -166,9 +166,9 @@ describe 'custom validations', ->
       include:
         symbols: /[#]/
 
-    errors = pv.validate()
-    expect(errors.requirements.include).toEqual ['symbols']
-    expect(errors.fullMessages).toEqual ["Do use a symbol"]
+    status = pv.validate()
+    expect(status.errors.include).toEqual ['symbols']
+    expect(status.fullMessages).toEqual ["Do use a symbol"]
 
   it "email", ->
     input.value = 'hatmuffin!name'
@@ -178,10 +178,10 @@ describe 'custom validations', ->
       exclude:
         partial_email: 'name'
 
-    errors = pv.validate()
-    expect(errors.requirements.include).toEqual ['uppercase']
-    expect(errors.requirements.exclude).toEqual ['partial_email']
-    expect(errors.fullMessages).toEqual [
+    status = pv.validate()
+    expect(status.errors.include).toEqual ['uppercase']
+    expect(status.errors.exclude).toEqual ['partial_email']
+    expect(status.fullMessages).toEqual [
       "Do use an uppercase letter"
       "Don't use partial email: name"
     ]
@@ -193,13 +193,13 @@ describe 'setting validations', ->
       include:
         minLength: 6
 
-    errors = pv.validate()
-    expect(errors.requirements.include).toEqual []
+    status = pv.validate()
+    expect(status.errors.include).toEqual []
 
     pv.setValidations
       exclude:
         lowercase: true
 
-    errors = pv.validate()
-    expect(errors.requirements.exclude).toEqual ['lowercase']
+    status = pv.validate()
+    expect(status.errors.exclude).toEqual ['lowercase']
 
