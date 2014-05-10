@@ -28,7 +28,6 @@ class PasswordValidation
     symbols: 'a symbol'
 
   validate: ->
-    value  = @el.value
     errors =
       requirements: {
         include: @validateType('include')
@@ -38,12 +37,15 @@ class PasswordValidation
       fullMessages: []
       toList: @toList
 
-    errors.requirements.include = _.compact _.flatten errors.requirements.include
-    errors.requirements.exclude = _.compact _.flatten errors.requirements.exclude
+    req = errors.requirements
 
-    delete errors.requirements.include if _.isEmpty errors.requirements.include
-    delete errors.requirements.exclude if _.isEmpty errors.requirements.exclude
+    req.include = _.compact _.flatten req.include
+    req.exclude = _.compact _.flatten req.exclude
 
+    errors.valid = !req.include.length and
+                   !req.exclude.length
+
+    errors.requirements = req
     errors.messages     = @createMessages(errors)
     errors.fullMessages = @createFullMessages(errors)
 
@@ -84,9 +86,9 @@ class PasswordValidation
   createFullMessages: (errors) ->
     _.flatten _.map errors.requirements, (set, type) =>
       if type == 'include'
-        prefix = 'Please use'
+        prefix = 'Do use'
       else
-        prefix = "Please don't use"
+        prefix = "Don't use"
 
       _.map set, (validation) =>
         body = @template @_messages[validation], @validations[type]

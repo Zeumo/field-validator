@@ -44,8 +44,7 @@ PasswordValidation = (function() {
   };
 
   PasswordValidation.prototype.validate = function() {
-    var errors, value;
-    value = this.el.value;
+    var errors, req;
     errors = {
       requirements: {
         include: this.validateType('include'),
@@ -55,14 +54,11 @@ PasswordValidation = (function() {
       fullMessages: [],
       toList: this.toList
     };
-    errors.requirements.include = _.compact(_.flatten(errors.requirements.include));
-    errors.requirements.exclude = _.compact(_.flatten(errors.requirements.exclude));
-    if (_.isEmpty(errors.requirements.include)) {
-      delete errors.requirements.include;
-    }
-    if (_.isEmpty(errors.requirements.exclude)) {
-      delete errors.requirements.exclude;
-    }
+    req = errors.requirements;
+    req.include = _.compact(_.flatten(req.include));
+    req.exclude = _.compact(_.flatten(req.exclude));
+    errors.valid = !req.include.length && !req.exclude.length;
+    errors.requirements = req;
     errors.messages = this.createMessages(errors);
     errors.fullMessages = this.createFullMessages(errors);
     return errors;
@@ -122,9 +118,9 @@ PasswordValidation = (function() {
       return function(set, type) {
         var prefix;
         if (type === 'include') {
-          prefix = 'Please use';
+          prefix = 'Do use';
         } else {
-          prefix = "Please don't use";
+          prefix = "Don't use";
         }
         return _.map(set, function(validation) {
           var body;
