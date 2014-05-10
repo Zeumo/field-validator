@@ -10,27 +10,49 @@
 
 # Validations
 
-By default, validations are disabled. Core validations are:
+By default, validations are falsey--your string will validate with anything.
 
-* length
+Validations must be specified for `include` or `exclude`:
+
+    new PasswordValidation(document.getElementById('password'), {
+      include: {
+        minLength: 10
+      },
+      exclude: {
+        email: $('#email').val()
+      }
+    });
+
+In the above example, the password must be at least 10 characters and cannot contain 'bob'.
+
+Core validations are `includes` only:
+
+* minLength
 * lowercase
 * uppercase
 * numbers
 * symbols
 
-A validation can be a Boolean or RegExp to override the default matchers.
+When matching length with `excludes` use `maxLength`.
 
-An array of `includes` and `excludes` can also be used to define more complex rules.
+A validation can be a Boolean or RegExp to override the default matchers.
 
 # Example
 
+A complete example can be found in `examples/`.
+
 ``` javascript
 var validator = new PasswordValidation($('#password')[0], {
-  length: 6,
-  uppercase: true,
-  lowercase: true,
-  numbers: true,
-  symbols: true
+  includes: {
+    length: 6,
+    uppercase: true,
+    lowercase: true,
+    numbers: true,
+    symbols: true
+  },
+  excludes: {
+    partial_email: 'bob'
+  }
 });
 
 $(document).on('keyup', '#password', function() {
