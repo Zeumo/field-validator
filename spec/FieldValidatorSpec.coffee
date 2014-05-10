@@ -3,7 +3,7 @@ input.type = 'password'
 
 describe 'validations (includes)', ->
   it "length", ->
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         minLength: 6
 
@@ -12,7 +12,7 @@ describe 'validations (includes)', ->
 
   it "lowercase", ->
     input.value = 'HATMUFFIN'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         lowercase: true
 
@@ -21,7 +21,7 @@ describe 'validations (includes)', ->
 
   it "uppercase", ->
     input.value = 'hatmuffin'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         uppercase: true
 
@@ -30,7 +30,7 @@ describe 'validations (includes)', ->
 
   it "numbers", ->
     input.value = 'hatmuffin'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         numbers: true
 
@@ -39,7 +39,7 @@ describe 'validations (includes)', ->
 
   it "symbols", ->
     input.value = 'hatmuffin'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         symbols: true
 
@@ -49,7 +49,7 @@ describe 'validations (includes)', ->
 describe 'validations (excludes)', ->
   it "length", ->
     input.value = 'hatmuffin'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       exclude:
         maxLength: 2
 
@@ -58,7 +58,7 @@ describe 'validations (excludes)', ->
 
   it "lowercase", ->
     input.value = 'hatmuffin'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       exclude:
         lowercase: true
 
@@ -67,7 +67,7 @@ describe 'validations (excludes)', ->
 
   it "uppercase", ->
     input.value = 'HATMUFFIN'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       exclude:
         uppercase: true
 
@@ -76,7 +76,7 @@ describe 'validations (excludes)', ->
 
   it "numbers", ->
     input.value = 'hatmuFFin!1101'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       exclude:
         numbers: true
 
@@ -85,7 +85,7 @@ describe 'validations (excludes)', ->
 
   it "symbols", ->
     input.value = 'hatmuffin!_'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       exclude:
         symbols: true
 
@@ -95,7 +95,7 @@ describe 'validations (excludes)', ->
 describe 'valid password', ->
   it "is valid", ->
     input.value = '_9hatMuffins!'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         minLength: 6
         lowercase: true
@@ -108,7 +108,7 @@ describe 'valid password', ->
 
   it "is invalid", ->
     input.value = 'hat'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         minLength: 6
         lowercase: true
@@ -123,7 +123,7 @@ describe 'valid password', ->
 describe 'errors', ->
   it 'has requirements', ->
     input.value = ''
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         minLength: 6
 
@@ -132,7 +132,7 @@ describe 'errors', ->
 
   it 'has messages', ->
     input.value = ''
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         minLength: 6
 
@@ -141,7 +141,7 @@ describe 'errors', ->
 
   it 'has fullMessages', ->
     input.value = ''
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         minLength: 6
 
@@ -150,7 +150,7 @@ describe 'errors', ->
 
   it 'can create list from messages', ->
     input.value = ''
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         minLength: 6
 
@@ -162,7 +162,7 @@ describe 'errors', ->
 describe 'custom validations', ->
   it "symbols", ->
     input.value = 'hatmuffin'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         symbols: /[#]/
 
@@ -172,7 +172,7 @@ describe 'custom validations', ->
 
   it "email", ->
     input.value = 'hatmuffin!name'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         uppercase: true
       exclude:
@@ -189,7 +189,7 @@ describe 'custom validations', ->
 describe 'setting validations', ->
   it 'supports setting validations after init', ->
     input.value = 'hatmuffin'
-    pv = new PasswordValidation input,
+    pv = new FieldValidator input,
       include:
         minLength: 6
 

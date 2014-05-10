@@ -49,8 +49,8 @@ module.exports = (grunt) ->
 */\n
         "
       dist:
-        src: '.tmp/password-validation.js'
-        dest: 'dist/password-validation.js'
+        src: '.tmp/<%= pkg.name %>.js'
+        dest: 'dist/<%= pkg.name %>.js'
 
   grunt.registerTask 'default', ['coffee:dist', 'coffee:spec', 'watch']
   grunt.registerTask 'dist', ['coffee:dist', 'concat']

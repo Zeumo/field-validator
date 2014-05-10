@@ -1,13 +1,13 @@
 /*
-password-validation 0.1.0
-A UI lib handling password validation feedback
+field-validator 0.1.0
+A lib designed for giving pleasant password validation feedback
 MIT
 2014-05-10
 */
-        var PasswordValidation;
+        var FieldValidator;
 
-PasswordValidation = (function() {
-  function PasswordValidation(el, validations) {
+FieldValidator = (function() {
+  function FieldValidator(el, validations) {
     this.el = el;
     if (validations == null) {
       validations = {};
@@ -17,7 +17,7 @@ PasswordValidation = (function() {
     this.setMessages();
   }
 
-  PasswordValidation.prototype._validations = {
+  FieldValidator.prototype._validations = {
     include: {
       minLength: 0,
       lowercase: false,
@@ -27,14 +27,14 @@ PasswordValidation = (function() {
     }
   };
 
-  PasswordValidation.prototype._matchers = {
+  FieldValidator.prototype._matchers = {
     lowercase: /[a-z]/,
     uppercase: /[A-Z]/,
     numbers: /[0-9]/,
     symbols: /[^a-zA-Z\d\s]/
   };
 
-  PasswordValidation.prototype._messages = {
+  FieldValidator.prototype._messages = {
     minLength: 'at least {minLength} characters',
     maxLength: 'shorter than {minLength} characters',
     lowercase: 'a lowercase letter',
@@ -43,12 +43,12 @@ PasswordValidation = (function() {
     symbols: 'a symbol'
   };
 
-  PasswordValidation.prototype.messagePrefixes = {
+  FieldValidator.prototype.messagePrefixes = {
     include: "Do use",
     exclude: "Don't use"
   };
 
-  PasswordValidation.prototype.validate = function() {
+  FieldValidator.prototype.validate = function() {
     var errors, req;
     errors = {
       requirements: {
@@ -69,7 +69,7 @@ PasswordValidation = (function() {
     return errors;
   };
 
-  PasswordValidation.prototype.validateType = function(type) {
+  FieldValidator.prototype.validateType = function(type) {
     var value;
     value = this.el.value;
     return _.map(this.validations[type], (function(_this) {
@@ -83,7 +83,7 @@ PasswordValidation = (function() {
     })(this));
   };
 
-  PasswordValidation.prototype.validateLength = function(value, type) {
+  FieldValidator.prototype.validateLength = function(value, type) {
     var length, validation;
     if (type === 'include') {
       validation = 'minLength';
@@ -103,7 +103,7 @@ PasswordValidation = (function() {
     }
   };
 
-  PasswordValidation.prototype.validateMatcher = function(value, type, validation) {
+  FieldValidator.prototype.validateMatcher = function(value, type, validation) {
     if (this.validations[type][validation]) {
       if (type === 'include') {
         if (!this._matchers[validation].test(value)) {
@@ -118,7 +118,7 @@ PasswordValidation = (function() {
     }
   };
 
-  PasswordValidation.prototype.createFullMessages = function(errors) {
+  FieldValidator.prototype.createFullMessages = function(errors) {
     return _.flatten(_.map(errors.requirements, (function(_this) {
       return function(set, type) {
         var prefix;
@@ -132,7 +132,7 @@ PasswordValidation = (function() {
     })(this)));
   };
 
-  PasswordValidation.prototype.createMessages = function(errors) {
+  FieldValidator.prototype.createMessages = function(errors) {
     return _.flatten(_.map(errors.requirements, (function(_this) {
       return function(set, key) {
         return _.map(set, function(req) {
@@ -142,13 +142,13 @@ PasswordValidation = (function() {
     })(this)));
   };
 
-  PasswordValidation.prototype.setValidations = function(object) {
+  FieldValidator.prototype.setValidations = function(object) {
     _.merge(this.validations, object);
     this.setMatchers();
     return this.setMessages();
   };
 
-  PasswordValidation.prototype.setMessages = function() {
+  FieldValidator.prototype.setMessages = function() {
     return _.each(this.validations, (function(_this) {
       return function(set, type) {
         return _.each(set, function(v, k) {
@@ -160,7 +160,7 @@ PasswordValidation = (function() {
     })(this));
   };
 
-  PasswordValidation.prototype.setMatchers = function() {
+  FieldValidator.prototype.setMatchers = function() {
     _.each(this.validations, (function(_this) {
       return function(set) {
         return _.each(set, function(val, validation) {
@@ -182,7 +182,7 @@ PasswordValidation = (function() {
     })(this));
   };
 
-  PasswordValidation.prototype.toList = function(messageType) {
+  FieldValidator.prototype.toList = function(messageType) {
     var $list, messages;
     messages = this[messageType];
     $list = document.createElement('ul');
@@ -196,7 +196,7 @@ PasswordValidation = (function() {
     return $list;
   };
 
-  PasswordValidation.prototype.template = function(s, d) {
+  FieldValidator.prototype.template = function(s, d) {
     var p;
     for (p in d) {
       s = s.replace(new RegExp("{" + p + "}", 'g'), d[p]);
@@ -204,6 +204,6 @@ PasswordValidation = (function() {
     return s;
   };
 
-  return PasswordValidation;
+  return FieldValidator;
 
 })();

@@ -1,12 +1,12 @@
-# password-validation
+# FieldValidator
 
-  A UI lib handling password validation feedback
+  A lib designed for giving pleasant password validation feedback.
 
   Depends on Lodash (or Underscore).
 
 ## Usage
 
-    new PasswordValidation(document.getElementById('password'), validations)
+    new FieldValidator(document.getElementById('password'), validations)
 
 ## Validations
 
@@ -14,7 +14,7 @@ By default, validations are falsey--your string will validate with any character
 
 Validations must be specified for `include` or `exclude`:
 
-    new PasswordValidation(document.getElementById('password'), {
+    new FieldValidator(document.getElementById('password'), {
       include: {
         minLength: 10
       },
@@ -42,7 +42,7 @@ A validation can be a Boolean or RegExp to override the default matchers.
 A complete example can be found in `examples/`.
 
 ``` javascript
-var validator = new PasswordValidation($('#password')[0], {
+var validator = new FieldValidator($('#password')[0], {
   includes: {
     minLength: 10,
     uppercase: true,

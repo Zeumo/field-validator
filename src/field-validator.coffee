@@ -1,4 +1,4 @@
-class PasswordValidation
+class FieldValidator
 
   constructor: (@el, validations = {}) ->
     @validations = _.defaults validations, @_validations

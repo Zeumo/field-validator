@@ -1,7 +1,7 @@
 {
-  "name": "password-validation",
+  "name": "field-validator",
   "version": "0.1.0",
-  "description": "A UI lib handling password validation feedback",
+  "description": "A lib designed for giving pleasant password validation feedback",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
