@@ -101,6 +101,17 @@ describe 'custom validations', ->
 
     errors = pv.validate()
     expect(errors.requirements).toEqual include: ['symbols']
+    expect(errors.fullMessages).toEqual ["Please use a symbol"]
+
+  it "email", ->
+    input.value = 'hatmuffin!name'
+    pv = new PasswordValidation input,
+      exclude:
+        partial_email: 'name'
+
+    errors = pv.validate()
+    expect(errors.requirements).toEqual exclude: ['partial_email']
+    expect(errors.fullMessages).toEqual ["Please don't use partial email: name"]
 
 describe 'valid password', ->
   it "is valid", ->

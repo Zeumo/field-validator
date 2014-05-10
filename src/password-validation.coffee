@@ -2,6 +2,8 @@ class PasswordValidation
 
   constructor: (@el, validations = {}) ->
     @validations = _.defaults validations, @_validations
+    @updateMatchers()
+    @updateMessages()
 
   _validations:
     include:
@@ -42,8 +44,8 @@ class PasswordValidation
     delete errors.requirements.include if _.isEmpty errors.requirements.include
     delete errors.requirements.exclude if _.isEmpty errors.requirements.exclude
 
-    errors.messages     = @createMessages(errors.requirements)
-    errors.fullMessages = @createFullMessages(errors.messages)
+    errors.messages     = @createMessages(errors)
+    errors.fullMessages = @createFullMessages(errors)
 
     errors
 
@@ -70,39 +72,48 @@ class PasswordValidation
           return validation
 
   validateMatcher: (value, type, validation) ->
-    if v = @validations[type][validation]
+    if @validations[type][validation]
       if type == 'include'
-        unless @defaultRegex(v, @_matchers[validation]).test(value)
+        unless @_matchers[validation].test(value)
           return validation
 
       if type == 'exclude'
-        if @defaultRegex(v, @_matchers[validation]).test(value)
+        if @_matchers[validation].test(value)
           return validation
 
-  validateExcludes: (value) ->
-    excludes = _.compact _.map _.keys(@validations), (key) ->
-      key if /^exclude/.test key
+  createFullMessages: (errors) ->
+    _.flatten _.map errors.requirements, (set, type) =>
+      if type == 'include'
+        prefix = 'Please use'
+      else
+        prefix = "Please don't use"
 
-    validations = _.map excludes, (key) =>
-      @validations[key]
+      _.map set, (validation) =>
+        body = @template @_messages[validation], @validations[type]
+        [prefix, body].join(' ')
 
-    _.map validations, (validation) ->
-      validation if _.contains value, validation
-
-  defaultRegex: (regex, fallback) ->
-    if regex instanceof RegExp
-      return regex
-    else
-      return fallback
-
-  createFullMessages: (messages) ->
-    _.map messages, (message) ->
-      "Please use #{message}"
-
-  createMessages: (requirements) ->
-    _.flatten _.map requirements, (set, key) =>
+  createMessages: (errors) ->
+    _.flatten _.map errors.requirements, (set, key) =>
       _.map set, (req) =>
         @template @_messages[req], @validations[key]
+
+  updateMessages: ->
+    # Copy _validations to _messages
+    _.each @validations, (set, type) =>
+      _.each set, (v, k) =>
+        unless @_messages[k] or (/length/i).test k
+          @_messages[k] = "#{k.replace('_', ' ')}: #{v}"
+
+  updateMatchers: ->
+    # Copy validations to matchers
+    _.each @validations, (set) =>
+      _.each set, (val, validation) =>
+          @_matchers = _.defaults @_matchers, set
+
+    # Convert strings to regex
+    _.each @_matchers, (v, k) =>
+      if typeof v == 'string'
+        @_matchers[k] = new RegExp v
 
   toList: (messageType) ->
     messages = this[messageType]
@@ -120,6 +131,3 @@ class PasswordValidation
     for p of d
       s = s.replace(new RegExp("{#{p}}", 'g'), d[p])
     s
-
-  set: (k, v) ->
-    this[k] = v

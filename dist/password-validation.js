@@ -13,6 +13,8 @@ PasswordValidation = (function() {
       validations = {};
     }
     this.validations = _.defaults(validations, this._validations);
+    this.updateMatchers();
+    this.updateMessages();
   }
 
   PasswordValidation.prototype._validations = {
@@ -61,8 +63,8 @@ PasswordValidation = (function() {
     if (_.isEmpty(errors.requirements.exclude)) {
       delete errors.requirements.exclude;
     }
-    errors.messages = this.createMessages(errors.requirements);
-    errors.fullMessages = this.createFullMessages(errors.messages);
+    errors.messages = this.createMessages(errors);
+    errors.fullMessages = this.createFullMessages(errors);
     return errors;
   };
 
@@ -101,62 +103,75 @@ PasswordValidation = (function() {
   };
 
   PasswordValidation.prototype.validateMatcher = function(value, type, validation) {
-    var v;
-    if (v = this.validations[type][validation]) {
+    if (this.validations[type][validation]) {
       if (type === 'include') {
-        if (!this.defaultRegex(v, this._matchers[validation]).test(value)) {
+        if (!this._matchers[validation].test(value)) {
           return validation;
         }
       }
       if (type === 'exclude') {
-        if (this.defaultRegex(v, this._matchers[validation]).test(value)) {
+        if (this._matchers[validation].test(value)) {
           return validation;
         }
       }
     }
   };
 
-  PasswordValidation.prototype.validateExcludes = function(value) {
-    var excludes, validations;
-    excludes = _.compact(_.map(_.keys(this.validations), function(key) {
-      if (/^exclude/.test(key)) {
-        return key;
-      }
-    }));
-    validations = _.map(excludes, (function(_this) {
-      return function(key) {
-        return _this.validations[key];
+  PasswordValidation.prototype.createFullMessages = function(errors) {
+    return _.flatten(_.map(errors.requirements, (function(_this) {
+      return function(set, type) {
+        var prefix;
+        if (type === 'include') {
+          prefix = 'Please use';
+        } else {
+          prefix = "Please don't use";
+        }
+        return _.map(set, function(validation) {
+          var body;
+          body = _this.template(_this._messages[validation], _this.validations[type]);
+          return [prefix, body].join(' ');
+        });
       };
-    })(this));
-    return _.map(validations, function(validation) {
-      if (_.contains(value, validation)) {
-        return validation;
-      }
-    });
+    })(this)));
   };
 
-  PasswordValidation.prototype.defaultRegex = function(regex, fallback) {
-    if (regex instanceof RegExp) {
-      return regex;
-    } else {
-      return fallback;
-    }
-  };
-
-  PasswordValidation.prototype.createFullMessages = function(messages) {
-    return _.map(messages, function(message) {
-      return "Please use " + message;
-    });
-  };
-
-  PasswordValidation.prototype.createMessages = function(requirements) {
-    return _.flatten(_.map(requirements, (function(_this) {
+  PasswordValidation.prototype.createMessages = function(errors) {
+    return _.flatten(_.map(errors.requirements, (function(_this) {
       return function(set, key) {
         return _.map(set, function(req) {
           return _this.template(_this._messages[req], _this.validations[key]);
         });
       };
     })(this)));
+  };
+
+  PasswordValidation.prototype.updateMessages = function() {
+    return _.each(this.validations, (function(_this) {
+      return function(set, type) {
+        return _.each(set, function(v, k) {
+          if (!(_this._messages[k] || /length/i.test(k))) {
+            return _this._messages[k] = "" + (k.replace('_', ' ')) + ": " + v;
+          }
+        });
+      };
+    })(this));
+  };
+
+  PasswordValidation.prototype.updateMatchers = function() {
+    _.each(this.validations, (function(_this) {
+      return function(set) {
+        return _.each(set, function(val, validation) {
+          return _this._matchers = _.defaults(_this._matchers, set);
+        });
+      };
+    })(this));
+    return _.each(this._matchers, (function(_this) {
+      return function(v, k) {
+        if (typeof v === 'string') {
+          return _this._matchers[k] = new RegExp(v);
+        }
+      };
+    })(this));
   };
 
   PasswordValidation.prototype.toList = function(messageType) {
@@ -179,10 +194,6 @@ PasswordValidation = (function() {
       s = s.replace(new RegExp("{" + p + "}", 'g'), d[p]);
     }
     return s;
-  };
-
-  PasswordValidation.prototype.set = function(k, v) {
-    return this[k] = v;
   };
 
   return PasswordValidation;

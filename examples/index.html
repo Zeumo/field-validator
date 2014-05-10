@@ -59,12 +59,16 @@
   <script>
     $(function() {
       var validator = new PasswordValidation($('#password')[0], {
-        length: 6,
-        uppercase: true,
-        lowercase: true,
-        numbers: true,
-        symbols: true,
-        excludes: [$('#email').val()]
+          include: {
+            length: 6,
+            uppercase: true,
+            lowercase: true,
+            numbers: true,
+            symbols: true
+          },
+          exclude: {
+            email: $('#email').val()
+          }
       });
 
       $(document).on('blur', '#email', function() {
