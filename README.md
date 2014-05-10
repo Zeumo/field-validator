@@ -44,7 +44,7 @@ A complete example can be found in `examples/`.
 ``` javascript
 var validator = new PasswordValidation($('#password')[0], {
   includes: {
-    length: 6,
+    minLength: 10,
     uppercase: true,
     lowercase: true,
     numbers: true,
