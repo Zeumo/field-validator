@@ -3,13 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>Password Validation Example</title>
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css">
+
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
   <script src="../dist/password-validation.js"></script>
+
   <style>
     body {
       font-family: Helvetica;
       font-size: 20px;
+    }
+
+    form {
+      padding: 20px;
+    }
+
+    button {
+      margin-top: 30px;
     }
 
     input {
@@ -17,6 +28,14 @@
       border: 1px solid #ddd;
       width: 300px;
       margin-bottom: 5px;
+    }
+
+    input:focus + .validations {
+      opacity: 1;
+    }
+
+    .validations {
+      opacity: 0.4;
     }
 
     .validations span {
@@ -43,14 +62,14 @@
 </head>
 <body>
   <form action="">
-    <input type="text" id="email" placeholder="Email" autofocus> <br>
-    <input type="password" id="password" placeholder="Password">
+    <input type="text" id="email" value="nic@zeumo.com" placeholder="Email"> <br>
+    <input type="password" id="password" placeholder="Password" autofocus>
     <div class="validations">
       <span class="lowercase">a-z</span>
       <span class="uppercase">A-Z</span>
       <span class="numbers">0-9</span>
       <span class="symbols">%&$</span>
-      <span class="length">6+</span>
+      <span class="minLength">6+</span>
     </div>
 
     <button>Submit</button>
@@ -60,36 +79,37 @@
     $(function() {
       var validator = new PasswordValidation($('#password')[0], {
           include: {
-            length: 6,
+            minLength: 6,
             uppercase: true,
             lowercase: true,
             numbers: true,
             symbols: true
           },
           exclude: {
-            email: $('#email').val()
+            email: $('#email').val(),
+            partial_email: $('#email').val().split('@')[0]
           }
       });
 
-      $(document).on('blur', '#email', function() {
-        validator.set('validations', {
-          excludes: [$(this).val()]
-        });
-      });
+    // $(document).on('blur', '#email', function() {
+    //   validator.set('validations', {
+    //     excludes: [$(this).val()]
+    //   });
+    // });
 
-      $(document).on('keyup', '#password', function() {
+      $(document).on('keyup', '#password', _.debounce(function() {
         var errors = validator.validate();
+
         $('.validations').children().removeClass('active-error active-success');
         if (!this.value) return;
 
-        $.each(errors, function(i, error) {
-          if (typeof error == 'string') {
-            $('.validations').find('.' + error).addClass('active-error');
-          }
+        $.each(errors.requirements.include, function(i, error) {
+          $('.validations').find('.' + error)
+            .addClass('active-error');
         });
 
         $('.validations').find(':not(.active-error)').addClass('active-success');
-      });
+      }, 300));
 
       $(document).on('submit', 'form', function(e) {
         e.preventDefault();
@@ -97,8 +117,7 @@
 
         $('.error-messages').remove();
         if (!$('#password').val().length) return;
-        $('.validations').append(errors.toList());
-
+        $('.validations').append(errors.toList('fullMessages'));
       });
     });
   </script>
