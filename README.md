@@ -64,6 +64,13 @@ $(document).on('keyup', '#password', function() {
 
 Run `spec/SpecRunner.html`
 
+# Contributing
+
+* Clone the project
+* Run `npm install`
+* Do your thing on a feature branch with tests
+* Send a pull request
+
 # License
 
 MIT
