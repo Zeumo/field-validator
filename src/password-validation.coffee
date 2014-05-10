@@ -27,6 +27,10 @@ class PasswordValidation
     numbers: 'a number'
     symbols: 'a symbol'
 
+  messagePrefixes:
+    include: "Do use"
+    exclude: "Don't use"
+
   validate: ->
     errors =
       requirements: {
@@ -85,10 +89,7 @@ class PasswordValidation
 
   createFullMessages: (errors) ->
     _.flatten _.map errors.requirements, (set, type) =>
-      if type == 'include'
-        prefix = 'Do use'
-      else
-        prefix = "Don't use"
+      prefix = @messagePrefixes[type]
 
       _.map set, (validation) =>
         body = @template @_messages[validation], @validations[type]
