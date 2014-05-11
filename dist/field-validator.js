@@ -73,48 +73,33 @@ FieldValidator = (function() {
     var value;
     value = this.el.value;
     return _.map(this.validations[type], (function(_this) {
-      return function(re, validation) {
-        if (/length/i.test(validation)) {
-          return _this.validateLength(value, type);
+      return function(v, k) {
+        if (/length/i.test(k)) {
+          return _this.validateLength(value, type, k);
         } else {
-          return _this.validateMatcher(value, type, validation);
+          return _this.validateMatcher(value, type, k);
         }
       };
     })(this));
   };
 
-  FieldValidator.prototype.validateLength = function(value, type) {
-    var length, validation;
-    if (type === 'include') {
-      validation = 'minLength';
-      if (length = this.validations[type][validation]) {
-        if (!(value.length >= length)) {
-          return validation;
-        }
-      }
+  FieldValidator.prototype.validateLength = function(value, type, k) {
+    var length;
+    length = this.validations[type][k];
+    if (value.length <= length && k === 'minLength') {
+      return k;
     }
-    if (type === 'exclude') {
-      validation = 'maxLength';
-      if (length = this.validations[type][validation]) {
-        if (value.length >= length) {
-          return validation;
-        }
-      }
+    if (value.length >= length && k === 'maxLength') {
+      return k;
     }
   };
 
-  FieldValidator.prototype.validateMatcher = function(value, type, validation) {
-    if (this.validations[type][validation]) {
-      if (type === 'include') {
-        if (!this._matchers[validation].test(value)) {
-          return validation;
-        }
-      }
-      if (type === 'exclude') {
-        if (this._matchers[validation].test(value)) {
-          return validation;
-        }
-      }
+  FieldValidator.prototype.validateMatcher = function(value, type, k) {
+    if (!this._matchers[k].test(value) && type === 'include') {
+      return k;
+    }
+    if (this._matchers[k].test(value) && type === 'exclude') {
+      return k;
     }
   };
 
@@ -123,9 +108,9 @@ FieldValidator = (function() {
       return function(set, type) {
         var prefix;
         prefix = _this.messagePrefixes[type];
-        return _.map(set, function(validation) {
+        return _.map(set, function(v) {
           var body;
-          body = _this.template(_this._messages[validation], _this.validations[type]);
+          body = _this.template(_this._messages[v], _this.validations[type]);
           return [prefix, body].join(' ');
         });
       };
@@ -134,9 +119,9 @@ FieldValidator = (function() {
 
   FieldValidator.prototype.createMessages = function(status) {
     return _.flatten(_.map(status.errors, (function(_this) {
-      return function(set, key) {
+      return function(set, type) {
         return _.map(set, function(req) {
-          return _this.template(_this._messages[req], _this.validations[key]);
+          return _this.template(_this._messages[req], _this.validations[type]);
         });
       };
     })(this)));
@@ -155,7 +140,7 @@ FieldValidator = (function() {
     return _.each(this.validations, (function(_this) {
       return function(set, type) {
         return _.each(set, function(v, k) {
-          if (!(typeof v !== 'string' || /length/i.test(k))) {
+          if (typeof v === 'string' && !/length/i.test(k)) {
             return _this._messages[k] = "" + (k.replace('_', ' ')) + ": " + v;
           }
         });
@@ -166,9 +151,9 @@ FieldValidator = (function() {
   FieldValidator.prototype.setMatchers = function() {
     _.each(this.validations, (function(_this) {
       return function(set) {
-        return _.each(set, function(val, validation) {
-          if (typeof val === 'string') {
-            return _this._matchers[validation] = val;
+        return _.each(set, function(v, k) {
+          if (typeof v === 'string') {
+            return _this._matchers[k] = v;
           }
         });
       };
@@ -176,21 +161,17 @@ FieldValidator = (function() {
     return _.each(this._matchers, (function(_this) {
       return function(v, k) {
         if (typeof v === 'string') {
-          _this._matchers[k] = new RegExp(v);
-        }
-        if (!(_this._matchers[k] instanceof RegExp)) {
-          return delete _this._matchers[k];
+          return _this._matchers[k] = new RegExp(v);
         }
       };
     })(this));
   };
 
   FieldValidator.prototype.toList = function(messageType) {
-    var $list, messages;
-    messages = this[messageType];
+    var $list;
     $list = document.createElement('ul');
     $list.className = 'error-messages';
-    _.each(messages, function(message) {
+    _.each(this[messageType], function(message) {
       var item;
       item = document.createElement('li');
       item.innerHTML = message;

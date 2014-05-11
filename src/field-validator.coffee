@@ -40,13 +40,11 @@ class FieldValidator
       fullMessages: []
       toList: @toList
 
-    errors = status.errors
-
+    errors         = status.errors
     errors.include = _.compact _.flatten errors.include
     errors.exclude = _.compact _.flatten errors.exclude
 
-    status.valid = !errors.include.length and !errors.exclude.length
-
+    status.valid        = !errors.include.length and !errors.exclude.length
     status.errors       = errors
     status.messages     = @createMessages(status)
     status.fullMessages = @createFullMessages(status)
@@ -56,47 +54,33 @@ class FieldValidator
   validateType: (type) ->
     value = @el.value
 
-    _.map @validations[type], (re, validation) =>
-      if (/length/i).test validation
-        @validateLength(value, type)
+    _.map @validations[type], (v, k) =>
+      if (/length/i).test k
+        @validateLength(value, type, k)
       else
-        @validateMatcher(value, type, validation)
+        @validateMatcher(value, type, k)
 
-  validateLength: (value, type) ->
-    if type == 'include'
-      validation = 'minLength'
-      if length = @validations[type][validation]
-        unless value.length >= length
-          return validation
+  validateLength: (value, type, k) ->
+    length = @validations[type][k]
+    return k if value.length <= length and k == 'minLength'
+    return k if value.length >= length and k == 'maxLength'
 
-    if type == 'exclude'
-      validation = 'maxLength'
-      if length = @validations[type][validation]
-        if value.length >= length
-          return validation
-
-  validateMatcher: (value, type, validation) ->
-    if @validations[type][validation]
-      if type == 'include'
-        unless @_matchers[validation].test(value)
-          return validation
-
-      if type == 'exclude'
-        if @_matchers[validation].test(value)
-          return validation
+  validateMatcher: (value, type, k) ->
+    return k if !@_matchers[k].test(value) and type == 'include'
+    return k if @_matchers[k].test(value) and type == 'exclude'
 
   createFullMessages: (status) ->
     _.flatten _.map status.errors, (set, type) =>
       prefix = @messagePrefixes[type]
 
-      _.map set, (validation) =>
-        body = @template @_messages[validation], @validations[type]
+      _.map set, (v) =>
+        body = @template @_messages[v], @validations[type]
         [prefix, body].join(' ')
 
   createMessages: (status) ->
-    _.flatten _.map status.errors, (set, key) =>
+    _.flatten _.map status.errors, (set, type) =>
       _.map set, (req) =>
-        @template @_messages[req], @validations[key]
+        @template @_messages[req], @validations[type]
 
   setValidations: (object) ->
     unless @validations
@@ -110,31 +94,26 @@ class FieldValidator
     # Copy validations to messages
     _.each @validations, (set, type) =>
       _.each set, (v, k) =>
-        unless typeof v != 'string' or (/length/i).test k
+        if typeof v == 'string' and !(/length/i).test(k)
           @_messages[k] = "#{k.replace('_', ' ')}: #{v}"
 
   setMatchers: ->
     # Copy validations to matchers
     _.each @validations, (set) =>
-      _.each set, (val, validation) =>
-        if typeof val == 'string'
-          @_matchers[validation] = val
+      _.each set, (v, k) =>
+        if typeof v == 'string'
+          @_matchers[k] = v
 
     # Convert strings to regex
     _.each @_matchers, (v, k) =>
       if typeof v == 'string'
         @_matchers[k] = new RegExp v
 
-      # Remove anything that isn't regex
-      unless @_matchers[k] instanceof RegExp
-        delete @_matchers[k]
-
   toList: (messageType) ->
-    messages = this[messageType]
     $list = document.createElement('ul')
     $list.className = 'error-messages'
 
-    _.each messages, (message) ->
+    _.each this[messageType], (message) ->
       item = document.createElement('li')
       item.innerHTML = message
       $list.appendChild item
