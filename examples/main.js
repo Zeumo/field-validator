@@ -26,7 +26,7 @@ $(function() {
 
   // Activate red/green validations under input on key up
   $(document).on('keyup', '#password', _.debounce(function(e) {
-    var errors = validator.validate();
+    var status = validator.validate();
 
     $('.validations').children('span')
       .removeClass('active-error active-success');
@@ -37,7 +37,7 @@ $(function() {
       return;
     }
 
-    $.each(errors.requirements.include, function(i, error) {
+    $.each(status.errors.include, function(i, error) {
       $('.validations').find('.' + error)
         .addClass('active-error');
     });
@@ -48,7 +48,7 @@ $(function() {
   // On submit, show full messages for anything still failing
   $(document).on('submit', 'form', function(e) {
     e.preventDefault();
-    var errors = validator.validate();
+    var status = validator.validate();
 
     $('.error-messages').remove();
 
@@ -56,8 +56,8 @@ $(function() {
     if (!$('#password').val().length) return;
 
     // Use the handy list helper to build a DOM fragment
-    if (!errors.valid) {
-      $('.validations').append(errors.toList('fullMessages'));
+    if (!status.valid) {
+      $('.validations').append(status.toList('fullMessages'));
     }
   });
 });
