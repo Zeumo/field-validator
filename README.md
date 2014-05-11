@@ -62,7 +62,7 @@ $(document).on('keyup', '#password', function() {
 
 ## Tests
 
-Run `spec/SpecRunner.html`
+Run `grunt jasmine`. To generate a SpecRunner.html for debugging, run `grunt jasmine:spec:build`.
 
 ## Contributing
 
@@ -73,4 +73,4 @@ Run `spec/SpecRunner.html`
 
 ## License
 
-MIT
+MIT. See `LICENSE.txt`
