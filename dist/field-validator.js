@@ -1,10 +1,9 @@
-/*
-field-validator 0.1.0
-A lib designed for giving pleasant password validation feedback
-MIT
-2014-05-11
-*/
-        var FieldValidator;
+/*  field-validator 0.1.0 (2014-05-11)
+ *  A lib designed for giving pleasant password validation feedback
+ *  MIT License
+ */
+
+var FieldValidator;
 
 FieldValidator = (function() {
   function FieldValidator(el, validations) {

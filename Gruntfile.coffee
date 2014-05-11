@@ -55,13 +55,11 @@ module.exports = (grunt) ->
     concat:
       options:
         banner: "
-/*\n
-<%= pkg.name %> <%= pkg.version %>\n
-<%= pkg.description %>\n
-<%= pkg.license %>\n
-<%= grunt.template.today('yyyy-mm-dd') %>\n
-*/\n
-        "
+/*  <%= pkg.name %> <%= pkg.version %> (<%= grunt.template.today('yyyy-mm-dd') %>)\n
+ *  <%= pkg.description %>\n
+ *  <%= pkg.license %> License\n
+ */\n\n
+"
       dist:
         src: '.tmp/<%= pkg.name %>.js'
         dest: 'dist/<%= pkg.name %>.js'
