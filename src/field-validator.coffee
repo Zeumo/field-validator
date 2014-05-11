@@ -1,6 +1,7 @@
 class FieldValidator
 
   constructor: (@el, validations = {}) ->
+    @el = @el[0] if @el.jquery
     @setValidations(validations)
 
   _validations:

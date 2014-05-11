@@ -1,6 +1,6 @@
 $(function() {
   // Setup validator on window so we can play with it
-  window.validator = new FieldValidator($('#password')[0], {
+  window.validator = new FieldValidator($('#password'), {
     include: {
       minLength: 6,
       uppercase: true,

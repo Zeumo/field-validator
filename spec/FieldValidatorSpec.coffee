@@ -1,6 +1,20 @@
 input      = document.createElement('input')
 input.type = 'password'
 
+describe 'arguments', ->
+  it 'accepts a DOM object', ->
+    f = new FieldValidator input,
+      include:
+        minLength: 6
+    expect( -> f.validate() ).not.toThrow()
+
+  it 'accepts a jQuery object', ->
+    $input = $('<input>')
+    f = new FieldValidator $input,
+      include:
+        minLength: 6
+    expect( -> f.validate() ).not.toThrow()
+
 describe 'validations (includes)', ->
   it "length", ->
     pv = new FieldValidator input,

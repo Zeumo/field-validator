@@ -12,6 +12,9 @@ FieldValidator = (function() {
     if (validations == null) {
       validations = {};
     }
+    if (this.el.jquery) {
+      this.el = this.el[0];
+    }
     this.setValidations(validations);
   }
 
