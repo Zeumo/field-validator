@@ -1,9 +1,7 @@
 class FieldValidator
 
   constructor: (@el, validations = {}) ->
-    @validations = _.defaults validations, @_validations
-    @setMatchers()
-    @setMessages()
+    @setValidations(validations)
 
   _validations:
     include:
@@ -100,7 +98,10 @@ class FieldValidator
         @template @_messages[req], @validations[key]
 
   setValidations: (object) ->
-    _.merge @validations, object
+    unless @validations
+      @validations = _.clone @_validations
+
+    _.extend @validations, object
     @setMatchers()
     @setMessages()
 

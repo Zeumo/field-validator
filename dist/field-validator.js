@@ -2,7 +2,7 @@
 field-validator 0.1.0
 A lib designed for giving pleasant password validation feedback
 MIT
-2014-05-10
+2014-05-11
 */
         var FieldValidator;
 
@@ -12,9 +12,7 @@ FieldValidator = (function() {
     if (validations == null) {
       validations = {};
     }
-    this.validations = _.defaults(validations, this._validations);
-    this.setMatchers();
-    this.setMessages();
+    this.setValidations(validations);
   }
 
   FieldValidator.prototype._validations = {
@@ -143,7 +141,10 @@ FieldValidator = (function() {
   };
 
   FieldValidator.prototype.setValidations = function(object) {
-    _.merge(this.validations, object);
+    if (!this.validations) {
+      this.validations = _.clone(this._validations);
+    }
+    _.extend(this.validations, object);
     this.setMatchers();
     return this.setMessages();
   };
