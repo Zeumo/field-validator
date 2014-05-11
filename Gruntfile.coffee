@@ -7,11 +7,11 @@ module.exports = (grunt) ->
     watch:
       src:
         files: 'src/*'
-        tasks: ['coffee:dist', 'concat']
+        tasks: ['coffee:dist', 'jasmine', 'concat']
 
       spec:
         files: 'spec/*'
-        tasks: ['coffee:spec']
+        tasks: ['coffee:spec', 'jasmine']
 
     coffee:
       dist:
@@ -37,6 +37,16 @@ module.exports = (grunt) ->
           dest: '.tmp/spec/'
           ext: '.js'
         ]
+
+    jasmine:
+      spec:
+        src: '.tmp/*.js',
+        options:
+          specs: '.tmp/spec/*Spec.js',
+          helpers: '.tmp/spec/*Helper.js'
+          vendor: [
+            'node_modules/lodash/lodash.js'
+          ]
 
     concat:
       options:
