@@ -6,6 +6,8 @@
 
 ## Usage
 
+Accepts either a DOM object or jQuery object as first argument.
+
     new FieldValidator(document.getElementById('password'), validations)
 
 ## Validations
@@ -56,7 +58,8 @@ var validator = new FieldValidator($('#password')[0], {
 });
 
 $(document).on('keyup', '#password', function() {
-  var errors = validator.validate();
+  // status contains errors, messages, and fullMessages
+  var status = validator.validate();
 });
 ```
 
