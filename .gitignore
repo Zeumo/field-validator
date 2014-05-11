@@ -1,2 +1,4 @@
 node_modules
 .tmp
+.grunt
+_SpecRunner.html
