@@ -42,9 +42,13 @@ module.exports = (grunt) ->
       spec:
         src: '.tmp/*.js',
         options:
+          display: 'short'
+          summary: true
+          keepRunner: true
           specs: '.tmp/spec/*Spec.js',
           helpers: '.tmp/spec/*Helper.js'
           vendor: [
+            'node_modules/jquery/dist/jquery.js'
             'node_modules/lodash/lodash.js'
           ]
 
