@@ -4,7 +4,7 @@
 
   Depends on Lodash (or Underscore).
 
-  ![](example.gif)
+  ![](examples/example.gif)
 
 ## Usage
 
