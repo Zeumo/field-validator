@@ -4,6 +4,8 @@
 
   Depends on Lodash (or Underscore).
 
+  ![](example.gif)
+
 ## Usage
 
 Accepts either a DOM object or jQuery object as first argument.
