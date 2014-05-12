@@ -1,4 +1,4 @@
-/*  field-validator 0.1.0 (2014-05-11)
+/*  field-validator - 0.1.0 (2014-05-12)
  *  A lib designed for giving pleasant password validation feedback
  *  MIT License
  */

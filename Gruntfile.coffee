@@ -55,7 +55,7 @@ module.exports = (grunt) ->
     concat:
       options:
         banner: "
-/*  <%= pkg.name %> <%= pkg.version %> (<%= grunt.template.today('yyyy-mm-dd') %>)\n
+/*  <%= pkg.name %> - <%= pkg.version %> (<%= grunt.template.today('yyyy-mm-dd') %>)\n
  *  <%= pkg.description %>\n
  *  <%= pkg.license %> License\n
  */\n\n
@@ -63,6 +63,11 @@ module.exports = (grunt) ->
       dist:
         src: '.tmp/<%= pkg.name %>.js'
         dest: 'dist/<%= pkg.name %>.js'
+
+    uglify:
+      dist:
+        files:
+          'dist/<%= pkg.name %>.min.js': 'dist/<%= pkg.name %>.js'
 
   grunt.registerTask 'default', ['coffee:dist', 'coffee:spec', 'jasmine', 'watch']
   grunt.registerTask 'dist', ['coffee:dist', 'concat']
