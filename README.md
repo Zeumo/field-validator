@@ -67,7 +67,7 @@ $(document).on('keyup', '#password', function() {
 
 ## Tests
 
-Run `grunt jasmine`. To generate a SpecRunner.html for debugging, run `grunt jasmine:spec:build`.
+Run `grunt jasmine`. A `_SpecRunner.html` will be generated for you.
 
 ## Contributing
 
