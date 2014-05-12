@@ -36,7 +36,7 @@ FieldValidator = (function() {
 
   FieldValidator.prototype._messages = {
     minLength: 'at least {minLength} characters',
-    maxLength: 'shorter than {minLength} characters',
+    maxLength: 'more than {maxLength} characters',
     lowercase: 'a lowercase letter',
     uppercase: 'an uppercase letter',
     numbers: 'a number',
@@ -49,7 +49,7 @@ FieldValidator = (function() {
   };
 
   FieldValidator.prototype.validate = function() {
-    var errors, status;
+    var status;
     status = {
       errors: {
         include: this.validateType('include'),
@@ -59,11 +59,7 @@ FieldValidator = (function() {
       fullMessages: [],
       toList: this.toList
     };
-    errors = status.errors;
-    errors.include = _.compact(_.flatten(errors.include));
-    errors.exclude = _.compact(_.flatten(errors.exclude));
-    status.valid = !errors.include.length && !errors.exclude.length;
-    status.errors = errors;
+    status.valid = !status.errors.include.concat(status.errors.exclude).length;
     status.messages = this.createMessages(status);
     status.fullMessages = this.createFullMessages(status);
     return status;
@@ -72,7 +68,7 @@ FieldValidator = (function() {
   FieldValidator.prototype.validateType = function(type) {
     var value;
     value = this.el.value;
-    return _.map(this.validations[type], (function(_this) {
+    return _.compact(_.map(this.validations[type], (function(_this) {
       return function(v, k) {
         if (/length/i.test(k)) {
           return _this.validateLength(value, type, k);
@@ -80,7 +76,7 @@ FieldValidator = (function() {
           return _this.validateMatcher(value, type, k);
         }
       };
-    })(this));
+    })(this)));
   };
 
   FieldValidator.prototype.validateLength = function(value, type, k) {
@@ -181,9 +177,9 @@ FieldValidator = (function() {
   };
 
   FieldValidator.prototype.template = function(s, d) {
-    var p;
-    for (p in d) {
-      s = s.replace(new RegExp("{" + p + "}", 'g'), d[p]);
+    var k;
+    for (k in d) {
+      s = s.replace(new RegExp("{" + k + "}", 'g'), d[k]);
     }
     return s;
   };

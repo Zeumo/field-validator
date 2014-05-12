@@ -20,7 +20,7 @@ class FieldValidator
 
   _messages:
     minLength: 'at least {minLength} characters'
-    maxLength: 'shorter than {minLength} characters'
+    maxLength: 'more than {maxLength} characters'
     lowercase: 'a lowercase letter'
     uppercase: 'an uppercase letter'
     numbers: 'a number'
@@ -32,29 +32,23 @@ class FieldValidator
 
   validate: ->
     status =
-      errors: {
+      errors:
         include: @validateType('include')
         exclude: @validateType('exclude')
-      }
       messages: []
       fullMessages: []
       toList: @toList
 
-    errors         = status.errors
-    errors.include = _.compact _.flatten errors.include
-    errors.exclude = _.compact _.flatten errors.exclude
-
-    status.valid        = !errors.include.length and !errors.exclude.length
-    status.errors       = errors
+    status.valid        = !status.errors.include
+                            .concat(status.errors.exclude).length
     status.messages     = @createMessages(status)
     status.fullMessages = @createFullMessages(status)
-
     status
 
   validateType: (type) ->
     value = @el.value
 
-    _.map @validations[type], (v, k) =>
+    _.compact _.map @validations[type], (v, k) =>
       if (/length/i).test k
         @validateLength(value, type, k)
       else
@@ -121,6 +115,6 @@ class FieldValidator
     $list
 
   template: (s, d) ->
-    for p of d
-      s = s.replace(new RegExp("{#{p}}", 'g'), d[p])
+    for k of d
+      s = s.replace(new RegExp("{#{k}}", 'g'), d[k])
     s
