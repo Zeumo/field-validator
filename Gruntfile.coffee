@@ -64,5 +64,5 @@ module.exports = (grunt) ->
         src: '.tmp/<%= pkg.name %>.js'
         dest: 'dist/<%= pkg.name %>.js'
 
-  grunt.registerTask 'default', ['coffee:dist', 'coffee:spec', 'watch']
+  grunt.registerTask 'default', ['coffee:dist', 'coffee:spec', 'jasmine', 'watch']
   grunt.registerTask 'dist', ['coffee:dist', 'concat']
